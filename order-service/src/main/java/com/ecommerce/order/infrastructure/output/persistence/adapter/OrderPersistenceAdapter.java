@@ -1,14 +1,20 @@
 package com.ecommerce.order.infrastructure.output.persistence.adapter;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Component;
+
 import com.ecommerce.order.domain.model.Order;
 import com.ecommerce.order.domain.model.OrderCustomerContact;
 import com.ecommerce.order.domain.model.OrderFinancials;
 import com.ecommerce.order.domain.model.ShippingInfo;
-import com.ecommerce.order.ports.out.OrderRepositoryPort;
 import com.ecommerce.order.infrastructure.output.persistence.JpaOrderRepository;
 import com.ecommerce.order.infrastructure.output.persistence.OrderEntity;
+import com.ecommerce.order.ports.out.OrderRepositoryPort;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +24,6 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
 
     @Override
     public Order save(Order order) {
-        // 1. Mapeamos de Dominio Puro a Entidad Física de Tabla SQL
         OrderEntity entity = OrderEntity.builder()
                 .id(order.getId())
                 .customerId(order.getCustomerId())
@@ -28,11 +33,9 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
                 .invoiceNumber(order.getInvoiceNumber())
                 .status(order.getStatus())
                 .notes(order.getNotes())
-                // Bloque contacto
                 .customerName(order.getCustomerContact() != null ? order.getCustomerContact().getCustomerName() : null)
                 .customerEmail(order.getCustomerContact() != null ? order.getCustomerContact().getCustomerEmail() : null)
                 .customerPhone(order.getCustomerContact() != null ? order.getCustomerContact().getCustomerPhone() : null)
-                // Bloque financieros
                 .price(order.getFinancials() != null ? order.getFinancials().getPrice() : null)
                 .discountAmount(order.getFinancials() != null ? order.getFinancials().getDiscountAmount() : null)
                 .taxAmount(order.getFinancials() != null ? order.getFinancials().getTaxAmount() : null)
@@ -40,7 +43,6 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
                 .totalAmount(order.getFinancials() != null ? order.getFinancials().getTotalAmount() : null)
                 .couponCode(order.getFinancials() != null ? order.getFinancials().getCouponCode() : null)
                 .currency(order.getFinancials() != null ? order.getFinancials().getCurrency() : null)
-                // Bloque logística
                 .paymentMethod(order.getShippingInfo() != null ? order.getShippingInfo().getPaymentMethod() : null)
                 .shippingMethod(order.getShippingInfo() != null ? order.getShippingInfo().getShippingMethod() : null)
                 .trackingNumber(order.getShippingInfo() != null ? order.getShippingInfo().getTrackingNumber() : null)
@@ -50,10 +52,8 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
                 .updatedAt(order.getUpdatedAt())
                 .build();
 
-        // 2. Guardamos en la base de datos
         OrderEntity savedEntity = jpaOrderRepository.save(entity);
 
-        // 3. Re-mapeamos la entidad guardada de vuelta a un objeto de dominio
         return Order.builder()
                 .id(savedEntity.getId())
                 .customerId(savedEntity.getCustomerId())
@@ -87,5 +87,38 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
                 .createdAt(savedEntity.getCreatedAt())
                 .updatedAt(savedEntity.getUpdatedAt())
                 .build();
+    }
+
+    // =========================================================================
+    // 🛠️ MÉTODOS REQUERIDOS POR EL CONTRATO DE INTERFAZ (Soportes provisionales)
+    // =========================================================================
+
+    public void deleteById(Long id) {
+        jpaOrderRepository.deleteById(id);
+    }
+
+   
+    public Optional<Order> findById(Long id) {
+        throw new UnsupportedOperationException("FindById no implementado aún");
+    }
+
+   
+    public Optional<Order> findByOrderNumber(String orderNumber) {
+        throw new UnsupportedOperationException("FindByOrderNumber no implementado aún");
+    }
+
+  
+    public Optional<Order> findByTrackingNumber(String trackingNumber) {
+        throw new UnsupportedOperationException("FindByTrackingNumber no implementado aún");
+    }
+
+ 
+    public Optional<Order> findByInvoiceNumber(String invoiceNumber) {
+        throw new UnsupportedOperationException("FindByInvoiceNumber no implementado aún");
+    }
+
+    
+    public List<Order> findByCustomerId(Long customerId) {
+        throw new UnsupportedOperationException("FindByCustomerId no implementado aún");
     }
 }
