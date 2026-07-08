@@ -1,7 +1,8 @@
-package com.ecommerce.order.infrastructure.output.persistence.adapter;
+package com.ecommerce.order.adapter.out.persistence;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -9,8 +10,9 @@ import com.ecommerce.order.domain.model.Order;
 import com.ecommerce.order.domain.model.OrderCustomerContact;
 import com.ecommerce.order.domain.model.OrderFinancials;
 import com.ecommerce.order.domain.model.ShippingInfo;
-import com.ecommerce.order.infrastructure.output.persistence.JpaOrderRepository;
-import com.ecommerce.order.infrastructure.output.persistence.OrderEntity;
+import com.ecommerce.order.ports.out.OrderDeleteRepositoryPort;
+import com.ecommerce.order.ports.out.OrderListRepositoryPort;
+import com.ecommerce.order.ports.out.OrderQueryRepositoryPort;
 import com.ecommerce.order.ports.out.OrderRepositoryPort;
 
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,8 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class OrderPersistenceAdapter implements OrderRepositoryPort {
+public class OrderPersistenceAdapter
+    implements OrderRepositoryPort, OrderQueryRepositoryPort, OrderListRepositoryPort, OrderDeleteRepositoryPort {
 
     private final JpaOrderRepository jpaOrderRepository;
 
@@ -54,71 +57,79 @@ public class OrderPersistenceAdapter implements OrderRepositoryPort {
 
         OrderEntity savedEntity = jpaOrderRepository.save(entity);
 
-        return Order.builder()
-                .id(savedEntity.getId())
-                .customerId(savedEntity.getCustomerId())
-                .productId(savedEntity.getProductId())
-                .paymentId(savedEntity.getPaymentId())
-                .orderNumber(savedEntity.getOrderNumber())
-                .invoiceNumber(savedEntity.getInvoiceNumber())
-                .status(savedEntity.getStatus())
-                .notes(savedEntity.getNotes())
-                .customerContact(OrderCustomerContact.builder()
-                        .customerName(savedEntity.getCustomerName())
-                        .customerEmail(savedEntity.getCustomerEmail())
-                        .customerPhone(savedEntity.getCustomerPhone())
-                        .build())
-                .financials(OrderFinancials.builder()
-                        .price(savedEntity.getPrice())
-                        .discountAmount(savedEntity.getDiscountAmount())
-                        .taxAmount(savedEntity.getTaxAmount())
-                        .shippingAmount(savedEntity.getShippingAmount())
-                        .totalAmount(savedEntity.getTotalAmount())
-                        .couponCode(savedEntity.getCouponCode())
-                        .currency(savedEntity.getCurrency())
-                        .build())
-                .shippingInfo(ShippingInfo.builder()
-                        .paymentMethod(savedEntity.getPaymentMethod())
-                        .shippingMethod(savedEntity.getShippingMethod())
-                        .trackingNumber(savedEntity.getTrackingNumber())
-                        .shippingAddress(savedEntity.getShippingAddress())
-                        .billingAddress(savedEntity.getBillingAddress())
-                        .build())
-                .createdAt(savedEntity.getCreatedAt())
-                .updatedAt(savedEntity.getUpdatedAt())
-                .build();
+        return toDomain(savedEntity);
     }
 
     // =========================================================================
     // 🛠️ MÉTODOS REQUERIDOS POR EL CONTRATO DE INTERFAZ (Soportes provisionales)
     // =========================================================================
 
+    @Override
     public void deleteById(Long id) {
         jpaOrderRepository.deleteById(id);
     }
 
-   
+    @Override
     public Optional<Order> findById(Long id) {
-        throw new UnsupportedOperationException("FindById no implementado aún");
+        return jpaOrderRepository.findById(id).map(this::toDomain);
     }
 
-   
+    @Override
     public Optional<Order> findByOrderNumber(String orderNumber) {
-        throw new UnsupportedOperationException("FindByOrderNumber no implementado aún");
+        return jpaOrderRepository.findByOrderNumber(orderNumber).map(this::toDomain);
     }
 
-  
+    @Override
     public Optional<Order> findByTrackingNumber(String trackingNumber) {
-        throw new UnsupportedOperationException("FindByTrackingNumber no implementado aún");
+        return jpaOrderRepository.findByTrackingNumber(trackingNumber).map(this::toDomain);
     }
 
- 
+    @Override
     public Optional<Order> findByInvoiceNumber(String invoiceNumber) {
-        throw new UnsupportedOperationException("FindByInvoiceNumber no implementado aún");
+        return jpaOrderRepository.findByInvoiceNumber(invoiceNumber).map(this::toDomain);
     }
 
-    
+    @Override
     public List<Order> findByCustomerId(Long customerId) {
-        throw new UnsupportedOperationException("FindByCustomerId no implementado aún");
+        return jpaOrderRepository.findByCustomerId(customerId)
+                .stream()
+                .map(this::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    private Order toDomain(OrderEntity entity) {
+        return Order.builder()
+                .id(entity.getId())
+                .customerId(entity.getCustomerId())
+                .productId(entity.getProductId())
+                .paymentId(entity.getPaymentId())
+                .orderNumber(entity.getOrderNumber())
+                .invoiceNumber(entity.getInvoiceNumber())
+                .status(entity.getStatus())
+                .notes(entity.getNotes())
+                .customerContact(OrderCustomerContact.builder()
+                        .customerName(entity.getCustomerName())
+                        .customerEmail(entity.getCustomerEmail())
+                        .customerPhone(entity.getCustomerPhone())
+                        .build())
+                .financials(OrderFinancials.builder()
+                        .price(entity.getPrice())
+                        .discountAmount(entity.getDiscountAmount())
+                        .taxAmount(entity.getTaxAmount())
+                        .shippingAmount(entity.getShippingAmount())
+                        .totalAmount(entity.getTotalAmount())
+                        .couponCode(entity.getCouponCode())
+                        .currency(entity.getCurrency())
+                        .build())
+                .shippingInfo(ShippingInfo.builder()
+                        .paymentMethod(entity.getPaymentMethod())
+                        .shippingMethod(entity.getShippingMethod())
+                        .trackingNumber(entity.getTrackingNumber())
+                        .shippingAddress(entity.getShippingAddress())
+                        .billingAddress(entity.getBillingAddress())
+                        .build())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .build();
     }
 }
