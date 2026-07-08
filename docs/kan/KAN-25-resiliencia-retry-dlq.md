@@ -8,6 +8,14 @@ Definir e implementar base de resiliencia en mensajería Kafka para evitar pérd
 2. Consumer con política de retry y enrutamiento a DLQ.
 3. Estrategia de idempotencia de consumo por eventId persistido.
 
+## Estado actual en este repositorio
+1. Producer robusto implementado en order-service.
+2. Base reusable de resiliencia para consumer implementada:
+   - CommonErrorHandler con backoff exponencial.
+   - DeadLetterPublishingRecoverer con sufijo `.dlq`.
+   - Persistencia de eventos procesados para de-duplicación.
+3. Listener de negocio concreto queda para el siguiente paso funcional (consumer real en shipping-service o listener inbound del dominio que corresponda).
+
 ## Criterios de aceptación
 1. Producer y consumer con política explícita de retry.
 2. Mensajes no recuperables terminan en DLQ.
