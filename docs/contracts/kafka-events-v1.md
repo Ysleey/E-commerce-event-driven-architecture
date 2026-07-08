@@ -204,6 +204,28 @@ Expected consumers:
 - Retries MUST include exponential backoff policy.
 - Poison messages MUST be redirected to DLQ topic.
 
+### Consumer de-duplication mandatory rule
+
+To avoid processing the same business event twice after broker or consumer restarts,
+every consumer MUST persist processed event IDs in a durable store with a unique constraint.
+
+Recommended minimal table:
+
+```sql
+CREATE TABLE processed_kafka_events (
+  event_id VARCHAR(100) PRIMARY KEY,
+  consumer_name VARCHAR(100) NOT NULL,
+  processed_at TIMESTAMP NOT NULL
+);
+```
+
+Processing rule:
+
+1. Read event.
+2. Check if event_id already exists.
+3. If exists: skip business processing and commit offset.
+4. If not exists: process business logic, store event_id, then commit offset.
+
 ## Suggested DLQ topics
 
 - ecommerce.order.events.v1.dlq
