@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.ecommerce.order.adapter.in.observability.CorrelationContext;
 import com.ecommerce.order.adapter.out.messaging.event.OrderEventType;
 import com.ecommerce.order.domain.model.Order;
 import com.ecommerce.order.domain.model.ShippingInfo;
@@ -162,6 +163,10 @@ public class OrderUseCaseService
     }
 
     private String resolveCorrelationId(Order order) {
+        Optional<String> requestCorrelationId = CorrelationContext.getCorrelationId();
+        if (requestCorrelationId.isPresent() && !requestCorrelationId.get().isBlank()) {
+            return requestCorrelationId.get();
+        }
         if (order.getOrderNumber() != null && !order.getOrderNumber().isBlank()) {
             return order.getOrderNumber();
         }

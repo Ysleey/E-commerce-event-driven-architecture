@@ -11,14 +11,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.ecommerce.order.adapter.in.observability.CorrelationIdFilter;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final JwtService jwtService;
+    private final CorrelationIdFilter correlationIdFilter;
 
-    public SecurityConfig(JwtService jwtService) {
+    public SecurityConfig(JwtService jwtService, CorrelationIdFilter correlationIdFilter) {
         this.jwtService = jwtService;
+        this.correlationIdFilter = correlationIdFilter;
     }
 
     @Bean
@@ -30,6 +34,7 @@ public class SecurityConfig {
                 // 2. Configuramos políticas de acceso por endpoint y rol
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/login").permitAll()
+                    .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("ADMIN", "SALES", "LOGISTICS", "CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("ADMIN", "SALES")
                         .requestMatchers(HttpMethod.PATCH, "/api/orders/*/shipping-address").hasAnyRole("ADMIN", "SALES")
@@ -52,7 +57,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 // 5. Registramos filtro JWT antes del filtro estándar de Spring
-                .addFilterBefore(jwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(correlationIdFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthenticationFilter(jwtService), CorrelationIdFilter.class);
 
         return http.build();
     }
