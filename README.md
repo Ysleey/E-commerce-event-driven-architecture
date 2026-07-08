@@ -68,6 +68,13 @@ flowchart LR
 - [Contrato OpenAPI v1 - order-service](docs/contracts/order-service-openapi-v1.yaml)
 - [Contrato de eventos Kafka v1](docs/contracts/kafka-events-v1.md)
 
+## Entregables Jira (KAN-22 a KAN-25)
+
+- [KAN-22 - OpenAPI v1](docs/kan/KAN-22-openapi-v1.md)
+- [KAN-23 - Contrato Kafka v1](docs/kan/KAN-23-kafka-contract-v1.md)
+- [KAN-24 - Observabilidad minima](docs/kan/KAN-24-observabilidad-minima.md)
+- [KAN-25 - Resiliencia retry y DLQ](docs/kan/KAN-25-resiliencia-retry-dlq.md)
+
 ## Estructura de codigo (order-service)
 
 ```text

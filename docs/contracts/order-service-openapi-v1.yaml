@@ -3,19 +3,52 @@ info:
   title: Order Service API
   version: 1.0.0
   description: |
-    API contract for order-service in an event-driven e-commerce platform.
-    This contract is designed for portfolio-quality delivery and cross-team integration.
+    OpenAPI contract for order-service.
+    This file is the source of truth for backend/frontend integration.
 servers:
   - url: http://localhost:8080
     description: Local environment
 tags:
+  - name: Auth
+    description: Public authentication endpoints
   - name: Orders
-    description: Order lifecycle management
+    description: Protected order lifecycle endpoints
 paths:
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login and get JWT token
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              admin:
+                value:
+                  username: admin
+                  password: admin123
+      responses:
+        '200':
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
   /api/orders:
     post:
       tags: [Orders]
-      summary: Create a new order
+      summary: Create order
       operationId: createOrder
       security:
         - bearerAuth: []
@@ -33,7 +66,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
         '400':
-          description: Invalid request
+          description: Bad request
           content:
             application/json:
               schema:
@@ -44,11 +77,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
 
   /api/orders/{id}:
     get:
       tags: [Orders]
-      summary: Get order by internal id
+      summary: Get order by id
       operationId: getOrderById
       security:
         - bearerAuth: []
@@ -61,8 +100,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
         '404':
-          description: Order not found
+          description: Not found
           content:
             application/json:
               schema:
@@ -71,7 +122,7 @@ paths:
   /api/orders/by-order-number/{orderNumber}:
     get:
       tags: [Orders]
-      summary: Get order by business order number
+      summary: Get order by order number
       operationId: getOrderByOrderNumber
       security:
         - bearerAuth: []
@@ -88,14 +139,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
         '404':
-          description: Order not found
+          description: Not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
 
-  /api/orders/by-tracking/{trackingNumber}:
+  /api/orders/by-tracking-number/{trackingNumber}:
     get:
       tags: [Orders]
       summary: Get order by tracking number
@@ -115,18 +178,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
         '404':
-          description: Order not found
+          description: Not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
 
-  /api/orders/by-customer/{customerId}:
+  /api/orders/customer/{customerId}:
     get:
       tags: [Orders]
       summary: List orders by customer id
-      operationId: getOrdersByCustomer
+      operationId: getOrdersByCustomerId
       security:
         - bearerAuth: []
       parameters:
@@ -138,16 +213,28 @@ paths:
             format: int64
       responses:
         '200':
-          description: List of customer orders
+          description: Orders found
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
 
   /api/orders/{id}/shipping-address:
-    put:
+    patch:
       tags: [Orders]
       summary: Update shipping address
       operationId: updateShippingAddress
@@ -168,15 +255,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
         '404':
-          description: Order not found
+          description: Not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
 
   /api/orders/{id}/ship:
-    put:
+    post:
       tags: [Orders]
       summary: Mark order as shipped
       operationId: shipOrder
@@ -197,9 +302,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
 
   /api/orders/{id}/complete:
-    put:
+    post:
       tags: [Orders]
       summary: Mark order as completed
       operationId: completeOrder
@@ -214,9 +343,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
 
   /api/orders/{id}/cancel:
-    put:
+    post:
       tags: [Orders]
       summary: Cancel order
       operationId: cancelOrder
@@ -237,12 +384,30 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
 
   /api/orders/{id}/return:
-    put:
+    post:
       tags: [Orders]
-      summary: Request order return
-      operationId: requestReturn
+      summary: Request return
+      operationId: returnOrder
       security:
         - bearerAuth: []
       parameters:
@@ -260,22 +425,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
 
   /api/orders/{id}/refund:
-    put:
+    post:
       tags: [Orders]
-      summary: Request order refund
-      operationId: requestRefund
+      summary: Request refund
+      operationId: refundOrder
       security:
         - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/OrderId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ReasonRequest'
       responses:
         '200':
           description: Refund requested
@@ -283,6 +460,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '403':
+          description: Forbidden by role
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
 
 components:
   securitySchemes:
@@ -301,75 +496,76 @@ components:
         format: int64
 
   schemas:
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          example: admin
+        password:
+          type: string
+          example: admin123
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+        expiresInSeconds:
+          type: integer
+          format: int64
+          example: 86400
+        username:
+          type: string
+          example: admin
+        roles:
+          type: array
+          items:
+            type: string
+          example: [ADMIN]
+
     CreateOrderRequest:
       type: object
-      required:
-        - orderNumber
-        - customerId
-        - productId
-        - price
-        - currency
+      required: [customerId, productId]
       properties:
-        orderNumber:
-          type: string
-          example: ORD-2026-0001
         customerId:
           type: integer
           format: int64
-          example: 1001
-        customerName:
-          type: string
-          example: Jane Doe
-        customerEmail:
-          type: string
-          format: email
-          example: jane.doe@email.com
-        customerPhone:
-          type: string
-          example: +34123456789
         productId:
           type: integer
           format: int64
-          example: 555
-        price:
-          type: number
-          format: double
-          example: 120.0
-        currency:
+        paymentId:
+          type: integer
+          format: int64
+        orderNumber:
           type: string
-          example: EUR
-        shippingAddress:
+          description: Optional. Backend generates one when missing.
+        invoiceNumber:
           type: string
-          example: Gran Via 1, Madrid
-        billingAddress:
-          type: string
-          example: Gran Via 1, Madrid
-        shippingMethod:
-          type: string
-          example: EXPRESS
-        paymentMethod:
-          type: string
-          example: CARD
-        couponCode:
-          type: string
-          example: SUMMER10
         notes:
           type: string
-          example: Deliver after 18:00
+        customerContact:
+          $ref: '#/components/schemas/CustomerContactInput'
+        financials:
+          $ref: '#/components/schemas/FinancialsInput'
+        shippingInfo:
+          $ref: '#/components/schemas/ShippingInfoInput'
 
     UpdateShippingAddressRequest:
       type: object
-      required:
-        - shippingAddress
+      required: [newAddress]
       properties:
-        shippingAddress:
+        newAddress:
           type: string
           example: Calle Nueva 123, Barcelona
 
     ShipOrderRequest:
       type: object
-      required:
-        - trackingNumber
+      required: [trackingNumber]
       properties:
         trackingNumber:
           type: string
@@ -395,87 +591,131 @@ components:
         id:
           type: integer
           format: int64
-          example: 1
-        orderNumber:
-          type: string
-          example: ORD-2026-0001
         customerId:
           type: integer
           format: int64
-          example: 1001
-        customerName:
-          type: string
-          example: Jane Doe
-        customerEmail:
-          type: string
-          example: jane.doe@email.com
-        customerPhone:
-          type: string
-          example: +34123456789
         productId:
           type: integer
           format: int64
-          example: 555
-        price:
-          type: number
-          format: double
-          example: 120.0
-        discountAmount:
-          type: number
-          format: double
-          example: 10.0
-        taxAmount:
-          type: number
-          format: double
-          example: 20.0
-        shippingAmount:
-          type: number
-          format: double
-          example: 5.0
-        totalAmount:
-          type: number
-          format: double
-          example: 135.0
-        currency:
-          type: string
-          example: EUR
-        status:
-          type: string
-          example: CREATED
-        shippingAddress:
-          type: string
-          example: Gran Via 1, Madrid
-        billingAddress:
-          type: string
-          example: Gran Via 1, Madrid
-        shippingMethod:
-          type: string
-          example: EXPRESS
-        trackingNumber:
-          type: string
-          example: TRK-ES-999000111
-        paymentMethod:
-          type: string
-          example: CARD
         paymentId:
           type: integer
           format: int64
-          example: 90001
+        orderNumber:
+          type: string
         invoiceNumber:
           type: string
-          example: INV-2026-001
-        couponCode:
+        status:
           type: string
-          example: SUMMER10
         notes:
           type: string
-          example: Deliver after 18:00
+        customerContact:
+          $ref: '#/components/schemas/CustomerContactOutput'
+        financials:
+          $ref: '#/components/schemas/FinancialsOutput'
+        shippingInfo:
+          $ref: '#/components/schemas/ShippingInfoOutput'
         createdAt:
           type: string
           format: date-time
         updatedAt:
           type: string
           format: date-time
+
+    CustomerContactInput:
+      type: object
+      properties:
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+          format: email
+        customerPhone:
+          type: string
+
+    CustomerContactOutput:
+      type: object
+      properties:
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+          format: email
+        customerPhone:
+          type: string
+
+    FinancialsInput:
+      type: object
+      properties:
+        price:
+          type: number
+          format: double
+        discountAmount:
+          type: number
+          format: double
+        taxAmount:
+          type: number
+          format: double
+        shippingAmount:
+          type: number
+          format: double
+        totalAmount:
+          type: number
+          format: double
+        couponCode:
+          type: string
+        currency:
+          type: string
+
+    FinancialsOutput:
+      type: object
+      properties:
+        price:
+          type: number
+          format: double
+        discountAmount:
+          type: number
+          format: double
+        taxAmount:
+          type: number
+          format: double
+        shippingAmount:
+          type: number
+          format: double
+        totalAmount:
+          type: number
+          format: double
+        couponCode:
+          type: string
+        currency:
+          type: string
+
+    ShippingInfoInput:
+      type: object
+      properties:
+        paymentMethod:
+          type: string
+        shippingMethod:
+          type: string
+        trackingNumber:
+          type: string
+        shippingAddress:
+          type: string
+        billingAddress:
+          type: string
+
+    ShippingInfoOutput:
+      type: object
+      properties:
+        paymentMethod:
+          type: string
+        shippingMethod:
+          type: string
+        trackingNumber:
+          type: string
+        shippingAddress:
+          type: string
+        billingAddress:
+          type: string
 
     ApiErrorResponse:
       type: object

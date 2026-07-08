@@ -66,6 +66,17 @@ Field rules:
 
 ## Order domain events (v1)
 
+Minimum baseline events required by cross-service contracts:
+
+- OrderCreated
+- OrderStatusChanged
+- OrderCancelled
+
+Implementation note:
+
+- `OrderStatusChanged` is the canonical generic event.
+- Current producer also emits specialized status events (`OrderShipped`, `OrderCompleted`, `OrderReturnRequested`, `OrderRefundRequested`) for clearer consumer behavior.
+
 ### 1) OrderCreated
 
 Topic: ecommerce.order.events.v1
@@ -196,6 +207,26 @@ Expected consumers:
 - payment-service: execute refund
 - notification-service
 
+### 7) OrderStatusChanged (canonical)
+
+Topic: ecommerce.order.events.v1
+
+```json
+{
+  "eventType": "OrderStatusChanged",
+  "eventVersion": "1.0",
+  "payload": {
+    "orderId": 1,
+    "orderNumber": "ORD-2026-0001",
+    "status": "SHIPPED",
+    "reason": null
+  }
+}
+```
+
+Expected consumers:
+- services that only need lifecycle state transition semantics
+
 ## Delivery and reliability rules
 
 - Delivery semantics: at-least-once.
@@ -231,6 +262,21 @@ Processing rule:
 - ecommerce.order.events.v1.dlq
 - ecommerce.shipping.events.v1.dlq
 - ecommerce.payment.events.v1.dlq
+
+## Topic and event table
+
+| Topic | Key | Event types |
+| --- | --- | --- |
+| ecommerce.order.events.v1 | orderId/orderNumber | OrderCreated, OrderStatusChanged, OrderCancelled, OrderShipped, OrderCompleted, OrderReturnRequested, OrderRefundRequested |
+| ecommerce.order.events.v1.dlq | same as original | Failed order events after retry exhaustion |
+
+## Compatibility matrix
+
+| Producer version | Consumer version | Compatibility | Notes |
+| --- | --- | --- | --- |
+| 1.x | 1.x | Full | Optional fields may be added safely |
+| 2.x | 1.x | Partial/Breaking | Requires migration strategy and dual publish window |
+| 2.x | 2.x | Full | New major contract adopted |
 
 ## Contract evolution policy
 
@@ -273,8 +319,9 @@ When publishing or consuming, log at least:
 Current HTTP actions in order-service should map to events:
 
 - POST /api/orders -> OrderCreated
-- PUT /api/orders/{id}/ship -> OrderShipped
-- PUT /api/orders/{id}/complete -> OrderCompleted
-- PUT /api/orders/{id}/cancel -> OrderCancelled
-- PUT /api/orders/{id}/return -> OrderReturnRequested
-- PUT /api/orders/{id}/refund -> OrderRefundRequested
+- PATCH /api/orders/{id}/shipping-address -> OrderStatusChanged (or OrderShippingAddressUpdated)
+- POST /api/orders/{id}/ship -> OrderShipped
+- POST /api/orders/{id}/complete -> OrderCompleted
+- POST /api/orders/{id}/cancel -> OrderCancelled
+- POST /api/orders/{id}/return -> OrderReturnRequested
+- POST /api/orders/{id}/refund -> OrderRefundRequested
