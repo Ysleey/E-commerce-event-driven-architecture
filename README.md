@@ -1,102 +1,154 @@
-# E-commerce-event-driven-architecture
-Microservicios e-commerce con Arquitectura Hexagonal, Spring Boot, Apache Kafka y Angular.
+# E-commerce Event Driven Architecture
 
-## Arquitectura objetivo
+Proyecto de portafolio profesional para demostrar una plataforma de e-commerce basada en microservicios, arquitectura hexagonal y comunicacion asincrona con Kafka.
 
-Este proyecto está pensado como una demostración profesional de arquitectura hexagonal aplicada a un e-commerce distribuido, con backend en Java y Spring Boot, mensajería asíncrona con Apache Kafka, persistencia relacional con PostgreSQL y frontend en Angular.
+## Vision del proyecto
 
-### Objetivo técnico
+Este repositorio muestra un enfoque real de arquitectura moderna para backend y frontend:
 
-Construir una plataforma evolutiva que permita mostrar:
+- Microservicios desacoplados para dominios de negocio.
+- Contratos primero (API y eventos) para minimizar ambiguedad.
+- Comunicacion REST para consultas/comandos directos y Kafka para integracion entre servicios.
+- Modelo evolutivo pensado para CI/CD, observabilidad y crecimiento del dominio.
 
-- Arquitectura Hexagonal con separación clara entre dominio, aplicación y adaptadores.
-- Microservicios desacoplados, con comunicación síncrona por REST y asíncrona por Kafka.
-- Persistencia relacional por servicio con PostgreSQL en Docker.
-- Seguridad con JWT.
-- Frontend Angular consumiendo contratos de API bien definidos.
-- Calidad de código, trazabilidad, documentación y observabilidad básica.
+## Objetivo de portafolio
 
-### Estructura objetivo del proyecto
+El objetivo no es solo que "funcione", sino demostrar buenas practicas de nivel profesional:
 
-```text
-com.ecommerce.order/
-├── adapter/
-│   ├── in/
-│   │   ├── controller/
-│   │   └── messaging/
-│   └── out/
-│       ├── persistence/
-│       └── messaging/
-├── application/
-├── domain/
-└── ports/
+- Diseño con Hexagonal Architecture (domain, application, ports, adapters).
+- Contratos versionados en docs/contracts.
+- Trazabilidad de cambios por epicas y subtareas Jira.
+- Convenciones de calidad para compilar, testear y documentar cada entrega.
+
+## Arquitectura de alto nivel
+
+```mermaid
+flowchart LR
+	UI[Angular Frontend] --> API[API Gateway or BFF]
+
+	API --> ORD[order-service]
+	API --> SHP[shipping-service]
+	API --> INV[inventory-service]
+	API --> PAY[payment-service]
+	API --> NOTI[notification-service]
+
+	ORD --> ORDDB[(PostgreSQL order_db)]
+	SHP --> SHPDB[(PostgreSQL shipping_db)]
+	INV --> INVDB[(PostgreSQL inventory_db)]
+	PAY --> PAYDB[(PostgreSQL payment_db)]
+
+	ORD -- publish --> KAFKA[(Kafka Cluster)]
+	SHP -- consume/publish --> KAFKA
+	INV -- consume/publish --> KAFKA
+	PAY -- consume/publish --> KAFKA
+	NOTI -- consume --> KAFKA
 ```
 
-### Tecnologías previstas
+## Stack tecnologico
 
-- Java 17+
-- Spring Boot
+- Java 17
+- Spring Boot 3.5.x
 - Maven
-- Apache Kafka
+- Spring Data JPA
 - PostgreSQL
-- Docker y Docker Compose
-- JWT
-- Angular 17+
-- Tailwind CSS
+- Apache Kafka
+- Docker + Docker Compose
+- Spring Security + JWT (en roadmap de implementacion)
+- Angular 17+ + Tailwind (frontend en roadmap)
 
-### Contratos del proyecto
+## Estado actual
 
-- [OpenAPI v1 del order-service](docs/contracts/order-service-openapi-v1.yaml)
+- Servicio principal activo: order-service.
+- Estructura hexagonal base implementada.
+- Capa REST inicial implementada para ordenes.
+- Contratos de API y eventos definidos en v1.
+
+## Contratos oficiales
+
+- [Contrato OpenAPI v1 - order-service](docs/contracts/order-service-openapi-v1.yaml)
 - [Contrato de eventos Kafka v1](docs/contracts/kafka-events-v1.md)
 
-### Plan de evolución
+## Estructura de codigo (order-service)
 
-1. Definir contratos de API y eventos.
-2. Completar el backend principal del order-service.
-3. Añadir seguridad JWT y mensajería Kafka.
-4. Construir el shipping-service como microservicio independiente.
-5. Desarrollar el frontend Angular.
-6. Consolidar documentación técnica, calidad y CI.
+```text
+order-service/src/main/java/com/ecommerce/order/
+|- adapter/
+|  |- in/
+|  |  |- controller/
+|  |- out/
+|     |- persistence/
+|- application/
+|- domain/
+|- ports/
+```
 
-### Organización en Jira
+## Principios de integracion entre microservicios
 
-El trabajo se gestionará por épicas y subtareas para mantener control de avance, definición clara de entregables y evidencia técnica de cada fase.
+- REST para operaciones sincronas orientadas a cliente.
+- Kafka para eventos de dominio y coordinacion eventual.
+- Cada servicio es duenio de su propia base de datos.
+- Los consumidores de eventos deben ser idempotentes.
+- Versionado explicito de contratos para evolucion segura.
 
-### Flujo de trabajo acordado
+## Ejecutar localmente
 
-1. Definir primero el objetivo de arquitectura y el alcance de cada épica o subtarea en Jira.
-2. Implementar solo la subtarea activa, validar el cambio y dejar evidencia técnica antes de avanzar a la siguiente.
-3. Cuando se complete una fase importante, preparar un push a `develop` desde GitHub Desktop con un mensaje claro y descriptivo.
+### 1. Levantar infraestructura
 
-### Cierre de subtareas en Jira
+Desde la raiz del repositorio:
 
-Cuando completes una subtarea, el orden recomendado será:
+```bash
+docker compose up -d
+```
 
-1. Verificar que el cambio cumple la descripción y el DoD de la subtarea.
-2. Confirmar que el proyecto compila y, si aplica, que los tests relevantes pasan.
-3. Actualizar la subtarea en Jira con una nota breve de lo realizado y la evidencia.
-4. Marcar la subtarea como finalizada solo cuando el resultado sea reproducible.
+### 2. Ejecutar el servicio
 
-### Cuándo hacer push a develop
+```bash
+cd order-service
+./mvnw spring-boot:run
+```
 
-Haz push a `develop` cuando completes una fase importante, por ejemplo:
+En Windows PowerShell:
 
-1. Finalización de una épica o bloque funcional completo.
-2. Cierre de un contrato importante, como API OpenAPI o esquema de eventos Kafka.
-3. Terminación de una base técnica estable, como seguridad, persistencia o mensajería.
+```powershell
+Set-Location order-service
+.\mvnw.cmd spring-boot:run
+```
 
-### Mensajes sugeridos para push
+### 3. Validar compilacion y tests
 
-Usa mensajes claros y orientados al resultado, por ejemplo:
+```bash
+./mvnw clean test
+```
 
-- `feat(order-service): add OpenAPI contract and REST entry structure`
-- `feat(kafka): define order events contract and metadata`
-- `feat(shipping-service): add consumer flow and persistence foundation`
-- `docs: update architecture and project roadmap`
-- `chore: reorganize hexagonal structure and clean packages`
+## Flujo profesional de trabajo (Jira + Git)
 
-### Herramientas de apoyo
+1. Definir alcance de subtarea con criterio de aceptacion claro.
+2. Implementar solo el alcance comprometido.
+3. Validar compile y tests.
+4. Actualizar subtarea Jira con evidencia tecnica.
+5. Realizar commit con mensaje orientado a resultado.
+6. Push a develop al cerrar un bloque funcional completo.
 
-- Docker Desktop para levantar PostgreSQL y Kafka localmente.
-- GitHub Desktop para revisar cambios, hacer commit y preparar push a `develop`.
-- Git Bash o terminal para validaciones rápidas si necesitas ejecutar comandos manuales.
+## Ejemplos de commits
+
+- feat(order-service): implement order REST adapter and use case wiring
+- feat(contracts): add OpenAPI and Kafka event contracts v1
+- docs(readme): describe architecture, roadmap and delivery workflow
+
+## Roadmap propuesto
+
+1. Endurecer seguridad JWT y autorizacion por rol.
+2. Publicacion de eventos de orden en Kafka.
+3. Consumidores en shipping/inventory/payment.
+4. Implementar patron outbox para entrega confiable de eventos.
+5. Agregar observabilidad (logs estructurados, metricas, tracing).
+6. Construir frontend Angular conectado por contratos.
+
+## Valor para reclutadores y clientes
+
+Este repositorio esta orientado a demostrar capacidad real en:
+
+- Diseño de sistemas distribuidos.
+- Implementacion backend moderna con Java/Spring.
+- Integracion event-driven con Kafka.
+- Practicas profesionales de documentacion y entrega incremental.

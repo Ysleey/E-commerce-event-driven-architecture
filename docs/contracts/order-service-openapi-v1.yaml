@@ -1,0 +1,497 @@
+openapi: 3.0.3
+info:
+  title: Order Service API
+  version: 1.0.0
+  description: |
+    API contract for order-service in an event-driven e-commerce platform.
+    This contract is designed for portfolio-quality delivery and cross-team integration.
+servers:
+  - url: http://localhost:8080
+    description: Local environment
+tags:
+  - name: Orders
+    description: Order lifecycle management
+paths:
+  /api/orders:
+    post:
+      tags: [Orders]
+      summary: Create a new order
+      operationId: createOrder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/orders/{id}:
+    get:
+      tags: [Orders]
+      summary: Get order by internal id
+      operationId: getOrderById
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/orders/by-order-number/{orderNumber}:
+    get:
+      tags: [Orders]
+      summary: Get order by business order number
+      operationId: getOrderByOrderNumber
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: orderNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/orders/by-tracking/{trackingNumber}:
+    get:
+      tags: [Orders]
+      summary: Get order by tracking number
+      operationId: getOrderByTrackingNumber
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: trackingNumber
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/orders/by-customer/{customerId}:
+    get:
+      tags: [Orders]
+      summary: List orders by customer id
+      operationId: getOrdersByCustomer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: customerId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: List of customer orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderResponse'
+
+  /api/orders/{id}/shipping-address:
+    put:
+      tags: [Orders]
+      summary: Update shipping address
+      operationId: updateShippingAddress
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateShippingAddressRequest'
+      responses:
+        '200':
+          description: Address updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+
+  /api/orders/{id}/ship:
+    put:
+      tags: [Orders]
+      summary: Mark order as shipped
+      operationId: shipOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShipOrderRequest'
+      responses:
+        '200':
+          description: Order shipped
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+
+  /api/orders/{id}/complete:
+    put:
+      tags: [Orders]
+      summary: Mark order as completed
+      operationId: completeOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      responses:
+        '200':
+          description: Order completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+
+  /api/orders/{id}/cancel:
+    put:
+      tags: [Orders]
+      summary: Cancel order
+      operationId: cancelOrder
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelOrderRequest'
+      responses:
+        '200':
+          description: Order cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+
+  /api/orders/{id}/return:
+    put:
+      tags: [Orders]
+      summary: Request order return
+      operationId: requestReturn
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      responses:
+        '200':
+          description: Return requested
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+
+  /api/orders/{id}/refund:
+    put:
+      tags: [Orders]
+      summary: Request order refund
+      operationId: requestRefund
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+      responses:
+        '200':
+          description: Refund requested
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    OrderId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+  schemas:
+    CreateOrderRequest:
+      type: object
+      required:
+        - orderNumber
+        - customerId
+        - productId
+        - price
+        - currency
+      properties:
+        orderNumber:
+          type: string
+          example: ORD-2026-0001
+        customerId:
+          type: integer
+          format: int64
+          example: 1001
+        customerName:
+          type: string
+          example: Jane Doe
+        customerEmail:
+          type: string
+          format: email
+          example: jane.doe@email.com
+        customerPhone:
+          type: string
+          example: +34123456789
+        productId:
+          type: integer
+          format: int64
+          example: 555
+        price:
+          type: number
+          format: double
+          example: 120.0
+        currency:
+          type: string
+          example: EUR
+        shippingAddress:
+          type: string
+          example: Gran Via 1, Madrid
+        billingAddress:
+          type: string
+          example: Gran Via 1, Madrid
+        shippingMethod:
+          type: string
+          example: EXPRESS
+        paymentMethod:
+          type: string
+          example: CARD
+        couponCode:
+          type: string
+          example: SUMMER10
+        notes:
+          type: string
+          example: Deliver after 18:00
+
+    UpdateShippingAddressRequest:
+      type: object
+      required:
+        - shippingAddress
+      properties:
+        shippingAddress:
+          type: string
+          example: Calle Nueva 123, Barcelona
+
+    ShipOrderRequest:
+      type: object
+      required:
+        - trackingNumber
+      properties:
+        trackingNumber:
+          type: string
+          example: TRK-ES-999000111
+
+    CancelOrderRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: Customer requested cancellation
+
+    ReasonRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          example: Product damaged
+
+    OrderResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        orderNumber:
+          type: string
+          example: ORD-2026-0001
+        customerId:
+          type: integer
+          format: int64
+          example: 1001
+        customerName:
+          type: string
+          example: Jane Doe
+        customerEmail:
+          type: string
+          example: jane.doe@email.com
+        customerPhone:
+          type: string
+          example: +34123456789
+        productId:
+          type: integer
+          format: int64
+          example: 555
+        price:
+          type: number
+          format: double
+          example: 120.0
+        discountAmount:
+          type: number
+          format: double
+          example: 10.0
+        taxAmount:
+          type: number
+          format: double
+          example: 20.0
+        shippingAmount:
+          type: number
+          format: double
+          example: 5.0
+        totalAmount:
+          type: number
+          format: double
+          example: 135.0
+        currency:
+          type: string
+          example: EUR
+        status:
+          type: string
+          example: CREATED
+        shippingAddress:
+          type: string
+          example: Gran Via 1, Madrid
+        billingAddress:
+          type: string
+          example: Gran Via 1, Madrid
+        shippingMethod:
+          type: string
+          example: EXPRESS
+        trackingNumber:
+          type: string
+          example: TRK-ES-999000111
+        paymentMethod:
+          type: string
+          example: CARD
+        paymentId:
+          type: integer
+          format: int64
+          example: 90001
+        invoiceNumber:
+          type: string
+          example: INV-2026-001
+        couponCode:
+          type: string
+          example: SUMMER10
+        notes:
+          type: string
+          example: Deliver after 18:00
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ApiErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: Bad Request
+        message:
+          type: string
+          example: Validation error
+        path:
+          type: string
+          example: /api/orders
