@@ -34,6 +34,10 @@ Use domain-oriented names:
 - ecommerce.inventory.events.v1
 - ecommerce.notification.events.v1
 
+Shipping events:
+
+- ecommerce.shipping.events.v1
+
 ## Event envelope (mandatory)
 
 All events MUST contain this envelope:
@@ -263,11 +267,57 @@ Processing rule:
 - ecommerce.shipping.events.v1.dlq
 - ecommerce.payment.events.v1.dlq
 
+## Shipping domain events (v1)
+
+### 1) ShippingCreated
+
+Topic: ecommerce.shipping.events.v1
+
+```json
+{
+  "eventType": "ShippingCreated",
+  "eventVersion": "1.0",
+  "payload": {
+    "shippingId": "4f9f13bf-8efb-4f33-8ec0-84fdcb5c2b2d",
+    "orderId": 1,
+    "status": "PENDING",
+    "trackingNumber": null
+  }
+}
+```
+
+Expected consumers:
+- notification-service: inform creation of shipment
+- analytics/reporting
+
+### 2) ShippingStatusChanged
+
+Topic: ecommerce.shipping.events.v1
+
+```json
+{
+  "eventType": "ShippingStatusChanged",
+  "eventVersion": "1.0",
+  "payload": {
+    "shippingId": "4f9f13bf-8efb-4f33-8ec0-84fdcb5c2b2d",
+    "orderId": 1,
+    "previousStatus": "PENDING",
+    "status": "SHIPPED",
+    "trackingNumber": "TRK-ES-999000111"
+  }
+}
+```
+
+Expected consumers:
+- notification-service: shipment updates
+- analytics/reporting
+
 ## Topic and event table
 
 | Topic | Key | Event types |
 | --- | --- | --- |
 | ecommerce.order.events.v1 | orderId/orderNumber | OrderCreated, OrderStatusChanged, OrderCancelled, OrderShipped, OrderCompleted, OrderReturnRequested, OrderRefundRequested |
+| ecommerce.shipping.events.v1 | orderId/shippingId | ShippingCreated, ShippingStatusChanged |
 | ecommerce.order.events.v1.dlq | same as original | Failed order events after retry exhaustion |
 
 ## Compatibility matrix

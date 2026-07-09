@@ -1,5 +1,7 @@
 package com.ecommerce.shipping.adapter.out.persistence;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 
 import com.ecommerce.shipping.domain.model.Shipping;
@@ -18,6 +20,16 @@ public class ShippingPersistenceAdapter implements ShippingRepositoryPort {
 		ShippingEntity entity = toEntity(shipping);
 		ShippingEntity persisted = shippingJpaRepository.save(entity);
 		return toDomain(persisted);
+	}
+
+	@Override
+	public Optional<Shipping> findByOrderId(Long orderId) {
+		return shippingJpaRepository.findByOrderId(orderId).map(this::toDomain);
+	}
+
+	@Override
+	public Optional<Shipping> findById(java.util.UUID id) {
+		return shippingJpaRepository.findById(id).map(this::toDomain);
 	}
 
 	private ShippingEntity toEntity(Shipping shipping) {

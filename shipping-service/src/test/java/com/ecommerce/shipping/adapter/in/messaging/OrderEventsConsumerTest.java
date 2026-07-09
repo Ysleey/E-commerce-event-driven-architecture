@@ -27,7 +27,7 @@ class OrderEventsConsumerTest {
 
         when(deduplicationService.registerIfFirstProcessing("event-123", "shipping-order-events-consumer-v1"))
                 .thenReturn(true);
-        when(createShippingUseCase.createPendingShipment(42L)).thenReturn(Shipping.builder()
+        when(createShippingUseCase.createPendingShipment(42L, null)).thenReturn(Shipping.builder()
                 .id(UUID.randomUUID())
                 .orderId(42L)
                 .status(ShippingStatus.PENDING)
@@ -41,7 +41,7 @@ class OrderEventsConsumerTest {
 
         consumer.consume(buildOrderCreatedEventJson(), "ecommerce.order.events.v1", 1, 10L, "42");
 
-        verify(createShippingUseCase).createPendingShipment(42L);
+        verify(createShippingUseCase).createPendingShipment(42L, null);
     }
 
     @Test
@@ -60,7 +60,7 @@ class OrderEventsConsumerTest {
 
         consumer.consume(buildOrderCreatedEventJson(), "ecommerce.order.events.v1", 1, 10L, "42");
 
-        verify(createShippingUseCase, never()).createPendingShipment(42L);
+        verify(createShippingUseCase, never()).createPendingShipment(42L, null);
     }
 
     private String buildOrderCreatedEventJson() throws Exception {
@@ -72,6 +72,7 @@ class OrderEventsConsumerTest {
         message.setEventId("event-123");
         message.setEventType("OrderCreated");
         message.setEventVersion("1.0");
+        message.setCorrelationId(null);
         message.setPayload(payload);
 
         return objectMapper.writeValueAsString(message);

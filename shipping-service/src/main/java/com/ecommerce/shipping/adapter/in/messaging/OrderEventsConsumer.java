@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import com.ecommerce.shipping.adapter.in.messaging.event.OrderEventMessage;
 import com.ecommerce.shipping.application.service.KafkaMessageDeduplicationService;
-import com.ecommerce.shipping.domain.model.Shipping;
 import com.ecommerce.shipping.ports.in.CreateShippingUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -81,13 +80,12 @@ public class OrderEventsConsumer {
                     key);
 
             if ("OrderCreated".equalsIgnoreCase(message.getEventType())) {
-                Shipping shipping = createShippingUseCase.createPendingShipment(message.getPayload().getOrderId());
+                createShippingUseCase.createPendingShipment(message.getPayload().getOrderId(), message.getCorrelationId());
                 LOGGER.info(
-                    "Created shippingId={} for orderId={} orderNumber={} correlationId={}",
-                    shipping.getId(),
+                        "Created shipping for orderId={} orderNumber={} correlationId={}",
                         message.getPayload() != null ? message.getPayload().getOrderId() : null,
-                    message.getPayload() != null ? message.getPayload().getOrderNumber() : null,
-                    message.getCorrelationId());
+                        message.getPayload() != null ? message.getPayload().getOrderNumber() : null,
+                        message.getCorrelationId());
             }
 
         } catch (Exception ex) {
