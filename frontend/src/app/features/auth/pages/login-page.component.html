@@ -28,6 +28,10 @@
       />
     </label>
 
+    <p *ngIf="infoMessage" class="rounded-xl border border-sky-300 bg-sky-50 px-3 py-2 text-sm font-semibold text-sky-700">
+      {{ infoMessage }}
+    </p>
+
     <p *ngIf="validationMessage" class="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700">
       {{ validationMessage }}
     </p>

@@ -11,8 +11,14 @@ export const authErrorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: unknown) => {
       if (error instanceof HttpErrorResponse && error.status === 401 && authSession.isAuthenticated()) {
-        authSession.clear();
-        void router.navigateByUrl('/login');
+        const returnUrl = router.url || '/';
+        authSession.clear('unauthorized');
+        void router.navigate(['/login'], {
+          queryParams: {
+            reason: 'unauthorized',
+            returnUrl,
+          },
+        });
       }
 
       return throwError(() => error);

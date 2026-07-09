@@ -28,6 +28,6 @@ export class AuthService {
   }
 
   logout(): void {
-    this.sessionService.clear();
+    this.sessionService.clear('manual');
   }
 }
