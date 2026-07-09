@@ -104,6 +104,18 @@ sequenceDiagram
 - [KAN-30 - Modelo de integracion API y errores HTTP](docs/kan/KAN-30-modelo-integracion-apis-errores-http.md)
 - [KAN-31 - Flujo autenticacion E2E JWT](docs/kan/KAN-31-flujo-autenticacion-e2e-jwt.md)
 - [KAN-32 - Seguimiento de pedido asincrono](docs/kan/KAN-32-pantalla-seguimiento-pedido-estado-asincrono.md)
+- [KAN-38 - Configuracion integracion frontend-backend](docs/kan/KAN-38-configuracion-integracion-frontend-backend.md)
+- [KAN-39 - Calidad tecnica frontend](docs/kan/KAN-39-calidad-tecnica-frontend.md)
+- [KAN-40 - Observabilidad y trazabilidad minima](docs/kan/KAN-40-ci-minima-frontend.md)
+- [KAN-41 - Evidencia y cierre de portafolio](docs/kan/KAN-41-evidencia-cierre-portafolio-epica.md)
+
+## Artefactos de arquitectura y portfolio
+
+- [README de order-service](order-service/README.md)
+- [ADR-001 Hexagonal + Event-Driven](docs/adr/ADR-001-hexagonal-event-driven-order-service.md)
+- [Matriz de trazabilidad Jira-GitHub](docs/portfolio/traceability-matrix.md)
+- [Checklist de demo visual](docs/portfolio/demo-checklist.md)
+- [Guia de limpieza de ramas](docs/portfolio/branch-cleanup.md)
 
 ## Estructura de codigo
 
