@@ -39,29 +39,14 @@
       </article>
 
       <aside class="rounded-3xl border border-line bg-card p-5 shadow-soft">
-        <h3 class="font-display text-xl font-bold text-ink">Resumen</h3>
-        <dl class="mt-4 space-y-3 text-sm">
-          <div class="flex items-center justify-between text-muted">
-            <dt>Items</dt>
-            <dd>{{ cart.totalItems() }}</dd>
-          </div>
-          <div class="flex items-center justify-between text-muted">
-            <dt>Subtotal</dt>
-            <dd>{{ cart.subtotal() | currency:'EUR' }}</dd>
-          </div>
-          <div class="flex items-center justify-between text-muted">
-            <dt>Impuestos</dt>
-            <dd>{{ cart.tax() | currency:'EUR' }}</dd>
-          </div>
-          <div class="flex items-center justify-between text-muted">
-            <dt>Envio</dt>
-            <dd>{{ cart.shipping() | currency:'EUR' }}</dd>
-          </div>
-          <div class="mt-3 flex items-center justify-between border-t border-line pt-3">
-            <dt class="font-display text-lg font-bold text-ink">Total</dt>
-            <dd class="font-display text-2xl font-bold text-brand-200">{{ cart.total() | currency:'EUR' }}</dd>
-          </div>
-        </dl>
+        <app-price-breakdown
+          title="Resumen"
+          [items]="cart.totalItems()"
+          [subtotal]="cart.subtotal()"
+          [tax]="cart.tax()"
+          [shipping]="cart.shipping()"
+          [total]="cart.total()"
+        />
 
         <div class="mt-6 space-y-2">
           <a routerLink="/checkout" class="block w-full rounded-xl bg-brand-400 px-4 py-2.5 text-center text-sm font-bold text-[#1e1510] transition hover:bg-brand-300">
@@ -76,12 +61,11 @@
   </ng-container>
 
   <ng-template #emptyCart>
-    <section class="rounded-3xl border border-line bg-card p-8 text-center shadow-soft">
-      <h2 class="font-display text-2xl font-bold text-ink">Tu carrito esta vacio</h2>
-      <p class="mt-2 text-sm text-muted">Anade productos desde el catalogo para continuar con la compra.</p>
-      <a routerLink="/catalogo" class="mt-5 inline-block rounded-xl bg-brand-400 px-5 py-2.5 text-sm font-bold text-[#1e1510] transition hover:bg-brand-300">
-        Ver catalogo
-      </a>
-    </section>
+    <app-empty-state-card
+      title="Tu carrito esta vacio"
+      description="Anade productos desde el catalogo para continuar con la compra."
+      actionLabel="Ver catalogo"
+      actionLink="/catalogo"
+    />
   </ng-template>
 </section>

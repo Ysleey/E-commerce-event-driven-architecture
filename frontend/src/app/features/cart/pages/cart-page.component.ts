@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { EmptyStateCardComponent } from '../../../shared/ui/empty-state-card/empty-state-card.component';
+import { PriceBreakdownComponent } from '../../../shared/ui/price-breakdown/price-breakdown.component';
 import { CartService } from '../services/cart.service';
 
 @Component({
   selector: 'app-cart-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, EmptyStateCardComponent, PriceBreakdownComponent],
   templateUrl: './cart-page.component.html',
 })
 export class CartPageComponent {

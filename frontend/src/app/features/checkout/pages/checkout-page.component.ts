@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { ApiError } from '../../../core/http/models/api-error.model';
+import { EmptyStateCardComponent } from '../../../shared/ui/empty-state-card/empty-state-card.component';
+import { FeedbackAlertComponent } from '../../../shared/ui/feedback-alert/feedback-alert.component';
+import { PriceBreakdownComponent } from '../../../shared/ui/price-breakdown/price-breakdown.component';
 import { CartService } from '../../cart/services/cart.service';
 import { CreateOrderRequest, OrderResponse } from '../models/order.models';
 import { CheckoutOrderService } from '../services/checkout-order.service';
@@ -11,7 +14,7 @@ import { CheckoutOrderService } from '../services/checkout-order.service';
 @Component({
   selector: 'app-checkout-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, EmptyStateCardComponent, FeedbackAlertComponent, PriceBreakdownComponent],
   templateUrl: './checkout-page.component.html',
 })
 export class CheckoutPageComponent {

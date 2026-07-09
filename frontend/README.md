@@ -1,27 +1,59 @@
-# Frontend
+# Frontend - E-commerce Event Driven Architecture
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+Frontend Angular 17 construido con componentes standalone y enfoque de calidad tecnica para integracion segura con `order-service`.
 
-## Development server
+## Estructura del modulo
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+```text
+src/app/
+|- app.config.ts                  # providers globales (router + http interceptors)
+|- app.routes.ts                  # rutas lazy-loaded por feature
+|- core/
+|  |- auth/                       # login, sesion, guard y modelos de usuario
+|  |- http/                       # api client, mapeo de errores e interceptores
+|  |- layout/                     # shell principal de navegacion
+|- features/
+|  |- auth/                       # pantalla de login
+|  |- catalog/                    # listado y filtros de productos
+|  |- cart/                       # carrito y control de cantidades
+|  |- checkout/                   # formulario y creacion de orden
+|  |- tracking/                   # seguimiento asincrono de pedido
+|- shared/
+|  |- ui/                         # componentes reutilizables de presentacion
+|  |  |- empty-state-card/
+|  |  |- feedback-alert/
+|  |  |- page-placeholder/
+|  |  |- price-breakdown/
+|  |- utils/                      # utilidades transversales
+```
 
-## Code scaffolding
+## Calidad tecnica (KAN-39)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- Tipado fuerte con interfaces de negocio (`Order`, `Product`, `UserProfile`).
+- Estandar de estilo con ESLint + Prettier.
+- Modularizacion de UI con componentes shared reutilizables.
+- Lazy loading en rutas principales para reducir el bundle inicial.
 
-## Build
+## Scripts principales
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- `npm start`: servidor de desarrollo.
+- `npm run build`: compilacion de produccion.
+- `npm run test -- --watch=false --browsers=ChromeHeadless --progress=false`: pruebas unitarias.
+- `npm run lint`: analisis estatico ESLint.
+- `npm run lint:fix`: correcciones automaticas de lint.
+- `npm run format`: formateo Prettier sobre `src`.
 
-## Running unit tests
+## Integracion local con backend
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+- Frontend: `http://localhost:4200`
+- API base: `http://localhost:8080` (definido en `src/app/core/config/api.config.ts`)
+- Requiere `order-service` activo para login, checkout y tracking.
 
-## Running end-to-end tests
+En Windows con restriccion PowerShell para npm scripts:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```powershell
+cmd /c npm install
+cmd /c npm run build
+cmd /c npm run test -- --watch=false --browsers=ChromeHeadless --progress=false
+cmd /c npm run lint
+```

@@ -50,13 +50,8 @@
           </label>
         </div>
 
-        <p *ngIf="errorMessage" class="mt-4 rounded-xl border border-danger/60 bg-danger/15 px-3 py-2 text-sm font-semibold text-[#ffc6be]">
-          {{ errorMessage }}
-        </p>
-
-        <p *ngIf="successMessage" class="mt-4 rounded-xl border border-success/60 bg-success/15 px-3 py-2 text-sm font-semibold text-[#d6efc7]">
-          {{ successMessage }}
-        </p>
+        <app-feedback-alert *ngIf="errorMessage" [message]="errorMessage" tone="error" />
+        <app-feedback-alert *ngIf="successMessage" [message]="successMessage" tone="success" />
 
         <button type="submit" [disabled]="isSubmitting" class="mt-5 w-full rounded-xl bg-brand-400 px-4 py-3 text-sm font-bold text-[#1e1510] transition hover:bg-brand-300 disabled:bg-brand-700 disabled:text-brand-200">
           {{ isSubmitting ? 'Procesando pedido...' : 'Confirmar compra' }}
@@ -64,14 +59,14 @@
       </form>
 
       <aside class="space-y-4 rounded-3xl border border-line bg-card p-5 shadow-soft">
-        <h3 class="font-display text-xl font-bold text-ink">Resumen de pago</h3>
-        <dl class="space-y-2 text-sm text-muted">
-          <div class="flex items-center justify-between"><dt>Items</dt><dd>{{ cart.totalItems() }}</dd></div>
-          <div class="flex items-center justify-between"><dt>Subtotal</dt><dd>{{ cart.subtotal() | currency:'EUR' }}</dd></div>
-          <div class="flex items-center justify-between"><dt>IVA</dt><dd>{{ cart.tax() | currency:'EUR' }}</dd></div>
-          <div class="flex items-center justify-between"><dt>Envio</dt><dd>{{ cart.shipping() | currency:'EUR' }}</dd></div>
-          <div class="flex items-center justify-between border-t border-line pt-3 text-base font-bold text-ink"><dt>Total</dt><dd>{{ cart.total() | currency:'EUR' }}</dd></div>
-        </dl>
+        <app-price-breakdown
+          title="Resumen de pago"
+          [items]="cart.totalItems()"
+          [subtotal]="cart.subtotal()"
+          [tax]="cart.tax()"
+          [shipping]="cart.shipping()"
+          [total]="cart.total()"
+        />
 
         <div *ngIf="createdOrder" class="rounded-2xl border border-brand-700/60 bg-brand-900/30 p-4">
           <p class="text-xs font-bold uppercase tracking-[0.12em] text-brand-100">Pedido creado</p>
@@ -87,12 +82,11 @@
   </ng-container>
 
   <ng-template #emptyCheckout>
-    <section class="rounded-3xl border border-line bg-card p-8 text-center shadow-soft">
-      <h2 class="font-display text-2xl font-bold text-ink">Sin productos para checkout</h2>
-      <p class="mt-2 text-sm text-muted">Agrega productos en el catalogo antes de confirmar compra.</p>
-      <a routerLink="/catalogo" class="mt-5 inline-block rounded-xl bg-brand-400 px-5 py-2.5 text-sm font-bold text-[#1e1510] transition hover:bg-brand-300">
-        Ir al catalogo
-      </a>
-    </section>
+    <app-empty-state-card
+      title="Sin productos para checkout"
+      description="Agrega productos en el catalogo antes de confirmar compra."
+      actionLabel="Ir al catalogo"
+      actionLink="/catalogo"
+    />
   </ng-template>
 </section>

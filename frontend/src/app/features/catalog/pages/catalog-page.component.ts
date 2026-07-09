@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { EmptyStateCardComponent } from '../../../shared/ui/empty-state-card/empty-state-card.component';
+import { FeedbackAlertComponent } from '../../../shared/ui/feedback-alert/feedback-alert.component';
 import { CartService } from '../../cart/services/cart.service';
 import { MOCK_PRODUCTS } from '../data/mock-products';
 import { Product } from '../models/product.model';
@@ -8,7 +10,7 @@ import { Product } from '../models/product.model';
 @Component({
   selector: 'app-catalog-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, EmptyStateCardComponent, FeedbackAlertComponent],
   templateUrl: './catalog-page.component.html',
 })
 export class CatalogPageComponent {

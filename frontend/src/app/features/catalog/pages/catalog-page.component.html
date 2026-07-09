@@ -35,9 +35,7 @@
       </label>
     </div>
 
-    <p *ngIf="feedbackMessage" class="mt-4 rounded-xl border border-success/60 bg-success/15 px-3 py-2 text-sm font-semibold text-[#d3ebc3]">
-      {{ feedbackMessage }}
-    </p>
+    <app-feedback-alert *ngIf="feedbackMessage" [message]="feedbackMessage" tone="success" />
   </header>
 
   <section *ngIf="filteredProducts.length > 0; else emptyState" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
@@ -70,9 +68,9 @@
   </section>
 
   <ng-template #emptyState>
-    <section class="rounded-2xl border border-line bg-card p-8 text-center shadow-soft">
-      <h3 class="font-display text-2xl font-bold text-ink">Sin resultados</h3>
-      <p class="mt-2 text-sm text-muted">Ajusta los filtros para ver productos disponibles.</p>
-    </section>
+    <app-empty-state-card
+      title="Sin resultados"
+      description="Ajusta los filtros para ver productos disponibles."
+    />
   </ng-template>
 </section>
