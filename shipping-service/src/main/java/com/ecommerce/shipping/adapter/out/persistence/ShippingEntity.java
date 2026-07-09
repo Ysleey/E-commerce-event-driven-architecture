@@ -32,7 +32,7 @@ public class ShippingEntity {
 	private UUID id;
 
 	@Column(name = "order_id", nullable = false)
-	private UUID orderId;
+	private Long orderId;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, length = 30)

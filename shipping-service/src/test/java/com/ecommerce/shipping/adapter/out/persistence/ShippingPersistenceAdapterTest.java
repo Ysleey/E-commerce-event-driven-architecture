@@ -24,7 +24,7 @@ class ShippingPersistenceAdapterTest {
 
     @Test
     void shouldPersistShipmentWithInitialPendingStatus() {
-        UUID orderId = UUID.randomUUID();
+        Long orderId = 42L;
         Shipping shipping = Shipping.builder()
                 .id(UUID.randomUUID())
                 .orderId(orderId)

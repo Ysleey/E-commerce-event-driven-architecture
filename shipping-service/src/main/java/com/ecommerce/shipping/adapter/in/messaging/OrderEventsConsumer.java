@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import com.ecommerce.shipping.adapter.in.messaging.event.OrderEventMessage;
 import com.ecommerce.shipping.application.service.KafkaMessageDeduplicationService;
+import com.ecommerce.shipping.domain.model.Shipping;
+import com.ecommerce.shipping.ports.in.CreateShippingUseCase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -19,14 +21,17 @@ public class OrderEventsConsumer {
 
     private final ObjectMapper objectMapper;
     private final KafkaMessageDeduplicationService deduplicationService;
+    private final CreateShippingUseCase createShippingUseCase;
     private final String consumerName;
 
     public OrderEventsConsumer(
             ObjectMapper objectMapper,
             KafkaMessageDeduplicationService deduplicationService,
+            CreateShippingUseCase createShippingUseCase,
             @Value("${app.kafka.consumer.name:shipping-order-events-consumer-v1}") String consumerName) {
         this.objectMapper = objectMapper;
         this.deduplicationService = deduplicationService;
+        this.createShippingUseCase = createShippingUseCase;
         this.consumerName = consumerName;
     }
 
@@ -76,10 +81,13 @@ public class OrderEventsConsumer {
                     key);
 
             if ("OrderCreated".equalsIgnoreCase(message.getEventType())) {
+                Shipping shipping = createShippingUseCase.createPendingShipment(message.getPayload().getOrderId());
                 LOGGER.info(
-                        "Base consumer ready for KAN-16: received OrderCreated orderId={} orderNumber={}",
+                    "Created shippingId={} for orderId={} orderNumber={} correlationId={}",
+                    shipping.getId(),
                         message.getPayload() != null ? message.getPayload().getOrderId() : null,
-                        message.getPayload() != null ? message.getPayload().getOrderNumber() : null);
+                    message.getPayload() != null ? message.getPayload().getOrderNumber() : null,
+                    message.getCorrelationId());
             }
 
         } catch (Exception ex) {

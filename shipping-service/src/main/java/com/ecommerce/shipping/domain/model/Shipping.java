@@ -1,7 +1,6 @@
 package com.ecommerce.shipping.domain.model;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +14,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Shipping {
-	private UUID id;
-	private UUID orderId;
+	private java.util.UUID id;
+	private Long orderId;
 	private ShippingStatus status;
 	private String trackingNumber;
 	private OffsetDateTime createdAt;

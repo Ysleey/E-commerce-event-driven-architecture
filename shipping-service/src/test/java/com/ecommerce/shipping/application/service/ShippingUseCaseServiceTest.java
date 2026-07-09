@@ -1,7 +1,5 @@
 package com.ecommerce.shipping.application.service;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -23,7 +21,7 @@ class ShippingUseCaseServiceTest {
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         ShippingUseCaseService service = new ShippingUseCaseService(repositoryPort);
-        UUID orderId = UUID.randomUUID();
+        Long orderId = 42L;
 
         Shipping result = service.createPendingShipment(orderId);
 

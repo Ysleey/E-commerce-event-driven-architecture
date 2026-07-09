@@ -18,7 +18,7 @@ Tabla principal:
 ```sql
 shippings (
   id UUID PK,
-  order_id UUID NOT NULL,
+  order_id BIGINT NOT NULL,
   status VARCHAR(30) NOT NULL,
   tracking_number VARCHAR(255),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL,

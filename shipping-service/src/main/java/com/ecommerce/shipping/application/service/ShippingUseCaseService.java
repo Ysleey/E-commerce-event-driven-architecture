@@ -19,7 +19,7 @@ public class ShippingUseCaseService implements CreateShippingUseCase {
 	private final ShippingRepositoryPort shippingRepositoryPort;
 
 	@Override
-	public Shipping createPendingShipment(UUID orderId) {
+	public Shipping createPendingShipment(Long orderId) {
 		OffsetDateTime now = OffsetDateTime.now();
 
 		Shipping shipping = Shipping.builder()
