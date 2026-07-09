@@ -5,26 +5,32 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          50: '#eff8ff',
-          100: '#dbeeff',
-          200: '#bfdfff',
-          300: '#93c8ff',
-          400: '#61a5fa',
-          500: '#3b82f6',
-          600: '#1f5ecf',
-          700: '#1d4ca7',
-          800: '#1e3f87',
-          900: '#1f366f'
+          50: '#f7eee7',
+          100: '#efd9c8',
+          200: '#e2b78a',
+          300: '#d59763',
+          400: '#c97a3d',
+          500: '#b56c34',
+          600: '#9b5b2c',
+          700: '#7d4923',
+          800: '#60371a',
+          900: '#452513'
         },
-        ink: '#101828',
-        paper: '#f8fafc'
+        ink: '#f4ede6',
+        paper: '#14110f',
+        surface: '#1e1a17',
+        card: '#2a241f',
+        line: '#3a322c',
+        muted: '#c9b8a7',
+        success: '#7fa36b',
+        danger: '#c65a4b'
       },
       fontFamily: {
         display: ['"Space Grotesk"', 'sans-serif'],
         body: ['"Manrope"', 'sans-serif']
       },
       boxShadow: {
-        soft: '0 20px 45px -28px rgba(16, 24, 40, 0.45)'
+        soft: '0 20px 48px -30px rgba(6, 4, 3, 0.75)'
       }
     },
   },

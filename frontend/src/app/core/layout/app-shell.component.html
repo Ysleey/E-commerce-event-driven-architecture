@@ -1,10 +1,10 @@
 <div class="min-h-screen">
-  <header class="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur">
+  <header class="sticky top-0 z-30 border-b border-line/90 bg-surface/90 backdrop-blur">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
       <a routerLink="/" class="flex items-center gap-3">
-        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-600 font-display text-sm font-bold text-white shadow-soft">EC</span>
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 font-display text-sm font-bold text-ink shadow-soft">EC</span>
         <div>
-          <p class="font-display text-sm uppercase tracking-[0.2em] text-brand-700">Portfolio Build</p>
+          <p class="font-display text-sm uppercase tracking-[0.2em] text-brand-200">Portfolio Build</p>
           <p class="font-body text-base font-bold text-ink">E-commerce Angular</p>
         </div>
       </a>
@@ -14,14 +14,14 @@
           *ngFor="let item of navItems"
           [routerLink]="item.path"
           [routerLinkActiveOptions]="{ exact: item.path === '/' }"
-          routerLinkActive="bg-brand-100 text-brand-700"
-          class="rounded-xl px-3 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-ink"
+          routerLinkActive="bg-brand-900/70 text-brand-100"
+          class="rounded-xl px-3 py-2 text-sm font-semibold text-muted transition hover:bg-card hover:text-ink"
         >
           {{ item.label }}
         </a>
 
-        <div class="ml-2 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600">
-          <span class="h-2 w-2 rounded-full" [class.bg-emerald-500]="authSession.isAuthenticated()" [class.bg-slate-300]="!authSession.isAuthenticated()"></span>
+        <div class="ml-2 flex items-center gap-2 rounded-xl border border-line bg-card px-3 py-2 text-xs font-semibold text-muted">
+          <span class="h-2 w-2 rounded-full" [class.bg-success]="authSession.isAuthenticated()" [class.bg-line]="!authSession.isAuthenticated()"></span>
           <span *ngIf="authSession.isAuthenticated(); else loggedOut">{{ authSession.username() }}</span>
           <ng-template #loggedOut>
             <span>Sin sesion</span>
@@ -32,7 +32,7 @@
           *ngIf="authSession.isAuthenticated()"
           type="button"
           (click)="logout()"
-          class="rounded-xl border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-100"
+          class="rounded-xl border border-line px-3 py-2 text-xs font-bold text-muted transition hover:bg-card hover:text-ink"
         >
           Logout
         </button>
