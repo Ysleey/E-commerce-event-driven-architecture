@@ -1,0 +1,108 @@
+<section class="space-y-6">
+  <header class="rounded-3xl border border-line bg-card p-6 shadow-soft sm:p-8">
+    <p class="inline-flex rounded-full bg-brand-900/60 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-brand-100">
+      KAN-32
+    </p>
+    <h1 class="mt-4 font-display text-3xl font-bold text-ink sm:text-4xl">Seguimiento asincrono de pedido</h1>
+    <p class="mt-3 text-sm leading-relaxed text-muted">
+      Consulta por numero de pedido o tracking y refresca estado automaticamente para reflejar progreso logistico en tiempo real.
+    </p>
+
+    <form class="mt-6 grid gap-4 md:grid-cols-[0.9fr_1.3fr_auto]" (ngSubmit)="submitSearch()">
+      <label class="block">
+        <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Tipo de busqueda</span>
+        <select
+          name="queryMode"
+          [(ngModel)]="queryMode"
+          class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand-400"
+        >
+          <option value="orderNumber">Numero de pedido</option>
+          <option value="trackingNumber">Tracking</option>
+        </select>
+      </label>
+
+      <label class="block">
+        <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Identificador</span>
+        <input
+          type="text"
+          name="queryValue"
+          [(ngModel)]="queryValue"
+          [placeholder]="queryMode === 'orderNumber' ? 'ORD-FE-...' : 'TRK-FE-...'"
+          class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand-400"
+        />
+      </label>
+
+      <div class="flex items-end gap-2">
+        <button type="submit" class="rounded-xl bg-brand-400 px-4 py-3 text-sm font-bold text-[#1e1510] transition hover:bg-brand-300">
+          Buscar
+        </button>
+        <button type="button" (click)="refreshNow()" [disabled]="!order || isLoading || isRefreshing" class="rounded-xl border border-line px-4 py-3 text-sm font-bold text-muted transition hover:bg-surface hover:text-ink disabled:opacity-50">
+          {{ isRefreshing ? 'Actualizando...' : 'Refrescar' }}
+        </button>
+      </div>
+    </form>
+
+    <label class="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+      <input type="checkbox" name="autoRefreshEnabled" [(ngModel)]="autoRefreshEnabled" (change)="onToggleAutoRefresh()" class="accent-[#c97a3d]" />
+      Auto-refresh cada 10 segundos
+    </label>
+  </header>
+
+  <section *ngIf="isLoading" class="rounded-3xl border border-line bg-card p-6 text-sm text-muted shadow-soft">
+    Cargando estado del pedido...
+  </section>
+
+  <section *ngIf="errorMessage" class="rounded-3xl border border-danger/60 bg-danger/15 p-6 text-sm font-semibold text-[#ffc6be] shadow-soft">
+    {{ errorMessage }}
+  </section>
+
+  <section *ngIf="infoMessage" class="rounded-3xl border border-brand-700/60 bg-brand-900/35 p-6 text-sm font-semibold text-brand-100 shadow-soft">
+    {{ infoMessage }}
+  </section>
+
+  <section *ngIf="order" class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+    <article class="rounded-3xl border border-line bg-card p-6 shadow-soft sm:p-8">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 class="font-display text-2xl font-bold text-ink">{{ order.orderNumber }}</h2>
+        <span class="rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.12em]" [ngClass]="statusBadgeClass(order.status)">
+          {{ order.status }}
+        </span>
+      </div>
+
+      <p class="mt-2 text-sm text-muted">Factura: {{ order.invoiceNumber || 'N/A' }}</p>
+      <p class="mt-1 text-sm text-muted">Tracking: {{ order.shippingInfo?.trackingNumber || 'Pendiente de asignar' }}</p>
+      <p class="mt-1 text-sm text-muted">Ultima actualizacion: {{ lastUpdated ? (lastUpdated | date:'shortTime') : 'N/A' }}</p>
+
+      <div class="mt-6 space-y-3">
+        <div
+          *ngFor="let step of trackingSteps"
+          class="flex items-center gap-3 rounded-xl border border-line p-3"
+          [ngClass]="step.reached ? 'bg-brand-900/30' : 'bg-surface/60'"
+        >
+          <span
+            class="inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold"
+            [ngClass]="step.reached ? 'bg-brand-400 text-[#1e1510]' : 'bg-line text-muted'"
+          >
+            {{ step.reached ? 'OK' : '...' }}
+          </span>
+          <span class="text-sm font-semibold" [class.text-ink]="step.reached" [class.text-muted]="!step.reached">{{ step.label }}</span>
+        </div>
+      </div>
+
+      <p *ngIf="order.notes" class="mt-6 rounded-xl border border-line bg-surface/60 p-3 text-sm text-muted">
+        {{ order.notes }}
+      </p>
+    </article>
+
+    <aside class="space-y-4 rounded-3xl border border-line bg-card p-6 shadow-soft">
+      <h3 class="font-display text-xl font-bold text-ink">Direccion de envio</h3>
+      <p class="text-sm text-muted">{{ order.shippingInfo?.shippingAddress || 'Sin direccion disponible' }}</p>
+
+      <h3 class="pt-2 font-display text-xl font-bold text-ink">Direccion de facturacion</h3>
+      <p class="text-sm text-muted">{{ order.shippingInfo?.billingAddress || 'Sin direccion disponible' }}</p>
+
+      <h3 class="pt-2 font-display text-xl font-bold text-ink">Metodo logistica</h3>
+      <p class="text-sm text-muted">{{ order.shippingInfo?.shippingMethod || 'No definido' }}</p>
+    </aside>
+  </section>
+</section>
