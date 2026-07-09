@@ -1,0 +1,36 @@
+<section class="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+  <article class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft">
+    <p class="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-amber-700">
+      KAN-18 en progreso
+    </p>
+    <h1 class="mt-4 font-display text-4xl font-bold leading-tight text-ink sm:text-5xl">
+      Frontend profesional para tu portfolio de e-commerce
+    </h1>
+    <p class="mt-5 max-w-2xl text-base leading-relaxed text-slate-600">
+      Esta base deja listo el enrutado principal, una capa visual coherente y la estructura necesaria para integrar autenticacion,
+      catalogo, carrito, checkout y seguimiento asincorno.
+    </p>
+
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a routerLink="/catalogo" class="rounded-xl bg-brand-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-brand-700">Ir a catalogo</a>
+      <a routerLink="/login" class="rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">Preparar login JWT</a>
+    </div>
+  </article>
+
+  <article class="rounded-3xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-8 shadow-soft">
+    <h2 class="font-display text-2xl font-bold text-brand-800">Siguientes entregables</h2>
+    <ul class="mt-5 space-y-3 text-sm text-slate-700">
+      <li class="rounded-xl bg-white/80 p-3">KAN-19: auth service + interceptor</li>
+      <li class="rounded-xl bg-white/80 p-3">KAN-30: modelo HTTP y errores</li>
+      <li class="rounded-xl bg-white/80 p-3">KAN-20: vistas de compra y checkout</li>
+      <li class="rounded-xl bg-white/80 p-3">KAN-31/32: flujo e2e y seguimiento</li>
+    </ul>
+  </article>
+</section>
+
+<section class="mt-8 grid gap-4 md:grid-cols-3">
+  <article *ngFor="let item of highlights" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-soft">
+    <h3 class="font-display text-xl font-bold text-ink">{{ item.title }}</h3>
+    <p class="mt-2 text-sm leading-relaxed text-slate-600">{{ item.description }}</p>
+  </article>
+</section>
