@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { AuthService } from '../auth/services/auth.service';
+import { AuthSessionService } from '../auth/services/auth-session.service';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 interface NavItem {
@@ -14,6 +16,11 @@ interface NavItem {
   templateUrl: './app-shell.component.html',
 })
 export class AppShellComponent {
+  constructor(
+    private readonly authService: AuthService,
+    readonly authSession: AuthSessionService,
+  ) {}
+
   readonly navItems: NavItem[] = [
     { label: 'Inicio', path: '/' },
     { label: 'Catalogo', path: '/catalogo' },
@@ -22,4 +29,8 @@ export class AppShellComponent {
     { label: 'Seguimiento', path: '/seguimiento' },
     { label: 'Login', path: '/login' },
   ];
+
+  logout(): void {
+    this.authService.logout();
+  }
 }

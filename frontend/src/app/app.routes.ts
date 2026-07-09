@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/auth/guards/auth.guard';
 import { AppShellComponent } from './core/layout/app-shell.component';
 import { LoginPageComponent } from './features/auth/pages/login-page.component';
 import { CartPageComponent } from './features/cart/pages/cart-page.component';
@@ -13,10 +14,10 @@ export const routes: Routes = [
 		component: AppShellComponent,
 		children: [
 			{ path: '', component: HomePageComponent, pathMatch: 'full' },
-			{ path: 'catalogo', component: CatalogPageComponent },
-			{ path: 'carrito', component: CartPageComponent },
-			{ path: 'checkout', component: CheckoutPageComponent },
-			{ path: 'seguimiento', component: TrackingPageComponent },
+			{ path: 'catalogo', component: CatalogPageComponent, canActivate: [authGuard] },
+			{ path: 'carrito', component: CartPageComponent, canActivate: [authGuard] },
+			{ path: 'checkout', component: CheckoutPageComponent, canActivate: [authGuard] },
+			{ path: 'seguimiento', component: TrackingPageComponent, canActivate: [authGuard] },
 			{ path: 'login', component: LoginPageComponent },
 		],
 	},
