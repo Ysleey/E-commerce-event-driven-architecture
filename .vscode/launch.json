@@ -9,6 +9,16 @@
             "projectName": "order-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-ShippingServiceApplication<shipping-service>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ecommerce.shipping.application.ShippingServiceApplication",
+            "projectName": "shipping-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
