@@ -96,6 +96,7 @@ public class OrderEventsConsumer {
                     offset,
                     key,
                     ex.getMessage());
+            throw new IllegalStateException("Failed to process shipping event", ex);
         }
     }
 

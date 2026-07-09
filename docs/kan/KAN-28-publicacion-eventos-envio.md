@@ -31,6 +31,11 @@ Pruebas:
 - `shipping-service/src/test/java/com/ecommerce/shipping/application/service/ShippingUseCaseServiceTest.java`
 - `shipping-service/src/test/java/com/ecommerce/shipping/adapter/in/messaging/OrderEventsConsumerTest.java`
 
+Validacion ejecutada:
+
+- `shipping-service` `ShippingUseCaseServiceTest`: verde.
+- `shipping-service` `ShippingKafkaIntegrationTest`: verde para publicacion de `ShippingCreated`.
+
 ## Definition of Done
 
 - `ShippingCreated` y `ShippingStatusChanged` quedan definidos y publicados.

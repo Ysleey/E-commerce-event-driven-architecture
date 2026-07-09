@@ -30,6 +30,11 @@ Pruebas:
 
 - `shipping-service/src/test/java/com/ecommerce/shipping/adapter/in/messaging/OrderEventsConsumerTest.java`
 
+Validacion ejecutada:
+
+- `shipping-service` `OrderEventsConsumerTest`: verde.
+- `shipping-service` `ShippingKafkaIntegrationTest`: verde en el flujo `OrderCreated -> ShippingCreated`.
+
 ## Definition of Done
 
 - `OrderCreated` dispara la creacion de un envio.
