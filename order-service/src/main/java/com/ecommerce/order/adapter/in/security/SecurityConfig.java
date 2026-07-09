@@ -34,7 +34,8 @@ public class SecurityConfig {
                 // 2. Configuramos políticas de acceso por endpoint y rol
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/login").permitAll()
-                    .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("ADMIN", "SALES", "LOGISTICS", "CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("ADMIN", "SALES")
                         .requestMatchers(HttpMethod.PATCH, "/api/orders/*/shipping-address").hasAnyRole("ADMIN", "SALES")
