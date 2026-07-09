@@ -1,0 +1,98 @@
+<section class="space-y-6">
+  <header class="rounded-3xl border border-line bg-card p-6 shadow-soft sm:p-8">
+    <h1 class="font-display text-3xl font-bold text-ink sm:text-4xl">Checkout y confirmacion</h1>
+    <p class="mt-3 text-sm text-muted">
+      Conecta el carrito con `POST /api/orders` y confirma el pedido con feedback al usuario.
+    </p>
+  </header>
+
+  <ng-container *ngIf="!cart.isEmpty(); else emptyCheckout">
+    <section class="grid gap-6 lg:grid-cols-[1.3fr_0.9fr]">
+      <form class="rounded-3xl border border-line bg-card p-5 shadow-soft" (ngSubmit)="submitOrder()">
+        <div class="grid gap-4 md:grid-cols-2">
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Nombre</span>
+            <input type="text" name="customerName" [(ngModel)]="customerName" class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand-400" />
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Email</span>
+            <input type="email" name="customerEmail" [(ngModel)]="customerEmail" class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand-400" />
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Telefono</span>
+            <input type="text" name="customerPhone" [(ngModel)]="customerPhone" class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand-400" />
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Metodo de pago</span>
+            <select name="paymentMethod" [(ngModel)]="paymentMethod" class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand-400">
+              <option value="CARD">Tarjeta</option>
+              <option value="TRANSFER">Transferencia</option>
+            </select>
+          </label>
+          <label class="block md:col-span-2">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Direccion de envio</span>
+            <input type="text" name="shippingAddress" [(ngModel)]="shippingAddress" class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand-400" />
+          </label>
+          <label class="block md:col-span-2">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Direccion de facturacion</span>
+            <input type="text" name="billingAddress" [(ngModel)]="billingAddress" class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand-400" />
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Metodo de envio</span>
+            <select name="shippingMethod" [(ngModel)]="shippingMethod" class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand-400">
+              <option value="STANDARD">Standard</option>
+              <option value="EXPRESS">Express</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-muted">Notas</span>
+            <input type="text" name="notes" [(ngModel)]="notes" class="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink outline-none focus:border-brand-400" />
+          </label>
+        </div>
+
+        <p *ngIf="errorMessage" class="mt-4 rounded-xl border border-danger/60 bg-danger/15 px-3 py-2 text-sm font-semibold text-[#ffc6be]">
+          {{ errorMessage }}
+        </p>
+
+        <p *ngIf="successMessage" class="mt-4 rounded-xl border border-success/60 bg-success/15 px-3 py-2 text-sm font-semibold text-[#d6efc7]">
+          {{ successMessage }}
+        </p>
+
+        <button type="submit" [disabled]="isSubmitting" class="mt-5 w-full rounded-xl bg-brand-400 px-4 py-3 text-sm font-bold text-[#1e1510] transition hover:bg-brand-300 disabled:bg-brand-700 disabled:text-brand-200">
+          {{ isSubmitting ? 'Procesando pedido...' : 'Confirmar compra' }}
+        </button>
+      </form>
+
+      <aside class="space-y-4 rounded-3xl border border-line bg-card p-5 shadow-soft">
+        <h3 class="font-display text-xl font-bold text-ink">Resumen de pago</h3>
+        <dl class="space-y-2 text-sm text-muted">
+          <div class="flex items-center justify-between"><dt>Items</dt><dd>{{ cart.totalItems() }}</dd></div>
+          <div class="flex items-center justify-between"><dt>Subtotal</dt><dd>{{ cart.subtotal() | currency:'EUR' }}</dd></div>
+          <div class="flex items-center justify-between"><dt>IVA</dt><dd>{{ cart.tax() | currency:'EUR' }}</dd></div>
+          <div class="flex items-center justify-between"><dt>Envio</dt><dd>{{ cart.shipping() | currency:'EUR' }}</dd></div>
+          <div class="flex items-center justify-between border-t border-line pt-3 text-base font-bold text-ink"><dt>Total</dt><dd>{{ cart.total() | currency:'EUR' }}</dd></div>
+        </dl>
+
+        <div *ngIf="createdOrder" class="rounded-2xl border border-brand-700/60 bg-brand-900/30 p-4">
+          <p class="text-xs font-bold uppercase tracking-[0.12em] text-brand-100">Pedido creado</p>
+          <p class="mt-1 text-sm text-ink">{{ createdOrder.orderNumber }} - {{ createdOrder.status }}</p>
+          <p class="text-xs text-muted">Tracking: {{ createdOrder.shippingInfo.trackingNumber }}</p>
+        </div>
+
+        <a routerLink="/carrito" class="block text-center text-xs font-semibold uppercase tracking-[0.12em] text-brand-200 hover:text-brand-100">
+          Volver al carrito
+        </a>
+      </aside>
+    </section>
+  </ng-container>
+
+  <ng-template #emptyCheckout>
+    <section class="rounded-3xl border border-line bg-card p-8 text-center shadow-soft">
+      <h2 class="font-display text-2xl font-bold text-ink">Sin productos para checkout</h2>
+      <p class="mt-2 text-sm text-muted">Agrega productos en el catalogo antes de confirmar compra.</p>
+      <a routerLink="/catalogo" class="mt-5 inline-block rounded-xl bg-brand-400 px-5 py-2.5 text-sm font-bold text-[#1e1510] transition hover:bg-brand-300">
+        Ir al catalogo
+      </a>
+    </section>
+  </ng-template>
+</section>

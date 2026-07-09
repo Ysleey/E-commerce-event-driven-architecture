@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { AuthService } from '../auth/services/auth.service';
 import { AuthSessionService } from '../auth/services/auth-session.service';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { CartService } from '../../features/cart/services/cart.service';
 
 interface NavItem {
   label: string;
@@ -20,6 +21,7 @@ export class AppShellComponent {
     private readonly authService: AuthService,
     private readonly router: Router,
     readonly authSession: AuthSessionService,
+    readonly cart: CartService,
   ) {}
 
   readonly navItems: NavItem[] = [
