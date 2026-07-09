@@ -58,9 +58,9 @@ flowchart LR
 
 ## Estado actual
 
-- Servicio principal activo: order-service.
-- Estructura hexagonal base implementada.
-- Capa REST inicial implementada para ordenes.
+- Servicios inicializados: order-service y shipping-service.
+- Estructura hexagonal base implementada en ambos modulos.
+- Capa REST de ordenes operativa y shipping-service preparado para consumo Kafka.
 - Contratos de API y eventos definidos en v1.
 
 ## Contratos oficiales
@@ -75,7 +75,7 @@ flowchart LR
 - [KAN-24 - Observabilidad minima](docs/kan/KAN-24-observabilidad-minima.md)
 - [KAN-25 - Resiliencia retry y DLQ](docs/kan/KAN-25-resiliencia-retry-dlq.md)
 
-## Estructura de codigo (order-service)
+## Estructura de codigo
 
 ```text
 order-service/src/main/java/com/ecommerce/order/
@@ -87,6 +87,18 @@ order-service/src/main/java/com/ecommerce/order/
 |- application/
 |- domain/
 |- ports/
+
+shipping-service/src/main/java/com/ecommerce/shipping/
+|- adapter/
+|  |- out/
+|     |- persistence/
+|- application/
+|  |- service/
+|- domain/
+|  |- model/
+|- ports/
+|  |- in/
+|  |- out/
 ```
 
 ## Principios de integracion entre microservicios
@@ -107,7 +119,7 @@ Desde la raiz del repositorio:
 docker compose up -d
 ```
 
-### 2. Ejecutar el servicio
+### 2. Ejecutar order-service
 
 ```bash
 cd order-service
@@ -121,13 +133,28 @@ Set-Location order-service
 .\mvnw.cmd spring-boot:run
 ```
 
-### 3. Validar compilacion y tests
+### 3. Ejecutar shipping-service
+
+```bash
+cd shipping-service
+./mvnw spring-boot:run
+```
+
+En Windows PowerShell:
+
+```powershell
+Set-Location shipping-service
+.\mvnw.cmd spring-boot:run
+```
+
+### 4. Validar compilacion y tests
 
 ```bash
 ./mvnw clean test
 ```
 
-## Flujo profesional de trabajo (Jira + Git)
+
+## Flujo  de trabajo 
 
 1. Definir alcance de subtarea con criterio de aceptacion claro.
 2. Implementar solo el alcance comprometido.
@@ -139,6 +166,7 @@ Set-Location order-service
 ## Ejemplos de commits
 
 - feat(order-service): implement order REST adapter and use case wiring
+- feat(shipping-service): bootstrap hexagonal module and local configuration
 - feat(contracts): add OpenAPI and Kafka event contracts v1
 - docs(readme): describe architecture, roadmap and delivery workflow
 
