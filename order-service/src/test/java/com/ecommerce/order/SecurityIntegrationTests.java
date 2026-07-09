@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ecommerce.order.adapter.in.observability.CorrelationIdFilter;
 import com.ecommerce.order.application.OrderServiceApplication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,8 +28,10 @@ class SecurityIntegrationTests {
 
     @Test
     void shouldReturn401WhenTokenIsMissing() throws Exception {
-        mockMvc.perform(get("/api/orders/1"))
-                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/orders/1")
+            .header(CorrelationIdFilter.CORRELATION_ID_HEADER, "sec-corr-401"))
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.correlationId").value("sec-corr-401"));
     }
 
     @Test
@@ -73,5 +76,11 @@ class SecurityIntegrationTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"trackingNumber\":\"TRK-123\"}"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void actuatorInfoShouldRequireAuthentication() throws Exception {
+        mockMvc.perform(get("/actuator/info"))
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -2,6 +2,8 @@ package com.ecommerce.order.adapter.in.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import com.ecommerce.order.adapter.in.controller.dto.ReasonRequest;
 import com.ecommerce.order.adapter.in.controller.dto.ShipOrderRequest;
 import com.ecommerce.order.adapter.in.controller.dto.UpdateShippingAddressRequest;
 import com.ecommerce.order.adapter.in.controller.mapper.OrderApiMapper;
+import com.ecommerce.order.adapter.in.observability.CorrelationContext;
 import com.ecommerce.order.domain.model.Order;
 import com.ecommerce.order.ports.in.CreateOrderUseCase;
 import com.ecommerce.order.ports.in.GetOrderUseCase;
@@ -29,6 +32,8 @@ import com.ecommerce.order.ports.in.UpdateOrderStateUseCase;
 @RestController
 @RequestMapping("/api/orders")
 public class OrderRestController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderRestController.class);
 
     private final CreateOrderUseCase createOrderUseCase;
     private final GetOrderUseCase getOrderUseCase;
@@ -53,12 +58,25 @@ public class OrderRestController {
 
     @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@RequestBody CreateOrderRequest request) {
+        String correlationId = CorrelationContext.getCorrelationId().orElse("N/A");
+        LOGGER.info("Create order request orderNumber={} customerId={} correlationId={}",
+            request.getOrderNumber(),
+            request.getCustomerId(),
+            correlationId);
+
         Order created = createOrderUseCase.createOrder(mapper.toDomain(request));
+        LOGGER.info("Create order success orderId={} orderNumber={} correlationId={}",
+            created.getId(),
+            created.getOrderNumber(),
+            correlationId);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapper.toResponse(created));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponse> getById(@PathVariable Long id) {
+        LOGGER.info("Get order by id={} correlationId={}",
+            id,
+            CorrelationContext.getCorrelationId().orElse("N/A"));
         Order order = getOrderUseCase.getById(id)
                 .orElseThrow(() -> new java.util.NoSuchElementException("Order not found for id=" + id));
         return ResponseEntity.ok(mapper.toResponse(order));

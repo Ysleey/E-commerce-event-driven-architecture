@@ -40,6 +40,25 @@ flowchart TD
   JPA / Kafka / External]
 ```
 
+## Trazabilidad CorrelationId (KAN-40)
+
+```mermaid
+sequenceDiagram
+  participant FE as Frontend
+  participant API as CorrelationIdFilter
+  participant CTRL as OrderRestController
+  participant APP as OrderUseCaseService
+  participant KAFKA as KafkaOrderEventPublisher
+
+  FE->>API: HTTP request (X-Correlation-Id opcional)
+  API->>API: genera/propaga correlationId y lo inyecta en MDC
+  API->>CTRL: request con correlationId activo
+  CTRL->>APP: create/get order
+  APP->>KAFKA: publishOrderEvent(..., correlationId)
+  KAFKA-->>KAFKA: payload incluye correlationId
+  CTRL-->>FE: response + header X-Correlation-Id
+```
+
 ## Stack tecnologico
 
 - Backend: Java 17, Spring Boot 3.5.x, Spring Security, Maven, JPA, PostgreSQL.

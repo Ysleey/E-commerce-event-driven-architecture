@@ -8,13 +8,15 @@ public class ApiErrorResponse {
     private String error;
     private String message;
     private String path;
+    private String correlationId;
 
-    public ApiErrorResponse(LocalDateTime timestamp, int status, String error, String message, String path) {
+    public ApiErrorResponse(LocalDateTime timestamp, int status, String error, String message, String path, String correlationId) {
         this.timestamp = timestamp;
         this.status = status;
         this.error = error;
         this.message = message;
         this.path = path;
+        this.correlationId = correlationId;
     }
 
     public LocalDateTime getTimestamp() {
@@ -35,5 +37,9 @@ public class ApiErrorResponse {
 
     public String getPath() {
         return path;
+    }
+
+    public String getCorrelationId() {
+        return correlationId;
     }
 }

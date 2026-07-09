@@ -19,6 +19,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.ecommerce.order.adapter.in.observability.CorrelationIdFilter;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -44,6 +46,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/auth/login").permitAll()
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+                    .requestMatchers("/actuator/info", "/actuator/info/**").hasAnyRole("ADMIN", "LOGISTICS")
+                    .requestMatchers("/actuator/metrics", "/actuator/metrics/**").hasRole("ADMIN")
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyRole("ADMIN", "SALES", "LOGISTICS", "CUSTOMER")
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("ADMIN", "SALES")
@@ -60,12 +64,18 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"Missing or invalid token\"}");
+                            String correlationId = resolveCorrelationId(request);
+                            response.getWriter().write(String.format(
+                                    "{\"error\":\"Unauthorized\",\"message\":\"Missing or invalid token\",\"correlationId\":\"%s\"}",
+                                    correlationId));
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setStatus(HttpStatus.FORBIDDEN.value());
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                            response.getWriter().write("{\"error\":\"Forbidden\",\"message\":\"Insufficient permissions for this resource\"}");
+                            String correlationId = resolveCorrelationId(request);
+                            response.getWriter().write(String.format(
+                                    "{\"error\":\"Forbidden\",\"message\":\"Insufficient permissions for this resource\",\"correlationId\":\"%s\"}",
+                                    correlationId));
                         }))
 
                 // 4. Stateless: No guardamos estado en el servidor
@@ -96,5 +106,10 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private String resolveCorrelationId(HttpServletRequest request) {
+        String correlationId = request.getHeader(CorrelationIdFilter.CORRELATION_ID_HEADER);
+        return correlationId == null || correlationId.isBlank() ? "N/A" : correlationId;
     }
 }

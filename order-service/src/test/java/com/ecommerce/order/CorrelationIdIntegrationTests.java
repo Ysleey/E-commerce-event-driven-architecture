@@ -49,4 +49,10 @@ class CorrelationIdIntegrationTests {
         mockMvc.perform(get("/actuator/health"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void metricsEndpointShouldRequireAuthentication() throws Exception {
+        mockMvc.perform(get("/actuator/metrics"))
+                .andExpect(status().isUnauthorized());
+    }
 }
