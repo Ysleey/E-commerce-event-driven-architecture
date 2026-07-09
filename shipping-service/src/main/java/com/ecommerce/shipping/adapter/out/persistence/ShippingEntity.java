@@ -13,12 +13,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "shippings")
+@Table(name = "shippings", uniqueConstraints = {
+	@UniqueConstraint(name = "uk_shipping_order_id", columnNames = { "order_id" })
+})
 @Getter
 @Setter
 @NoArgsConstructor
