@@ -1,113 +1,143 @@
 # E-commerce Event Driven Architecture
 
-Proyecto de portafolio profesional para demostrar una plataforma de e-commerce basada en microservicios, arquitectura hexagonal y comunicacion asincrona con Kafka.
+Proyecto de portafolio orientado a demostrar una solucion de e-commerce moderna con microservicios, arquitectura hexagonal, integracion asincrona con Kafka y frontend Angular corporativo.
 
-## Vision del proyecto
+## Resumen ejecutivo
 
-Este repositorio muestra un enfoque real de arquitectura moderna para backend y frontend:
+El repositorio implementa un flujo realista de negocio:
 
-- Microservicios desacoplados para dominios de negocio.
-- Contratos primero (API y eventos) para minimizar ambiguedad.
-- Comunicacion REST para consultas/comandos directos y Kafka para integracion entre servicios.
-- Modelo evolutivo pensado para CI/CD, observabilidad y crecimiento del dominio.
+- Gestion de ordenes en `order-service`.
+- Orquestacion logistica en `shipping-service`.
+- Contratos API/Eventos versionados como fuente de verdad.
+- Frontend Angular con autenticacion JWT, carrito, checkout y seguimiento asincrono.
 
-## Objetivo de portafolio
+Este enfoque prioriza escalabilidad, trazabilidad y calidad continua, con entregas incrementalmente evidenciadas en Jira.
 
-El objetivo no es solo que "funcione", sino demostrar buenas practicas de nivel profesional:
-
-- Diseño con Hexagonal Architecture (domain, application, ports, adapters).
-- Contratos versionados en docs/contracts.
-- Trazabilidad de cambios por epicas y subtareas Jira.
-- Convenciones de calidad para compilar, testear y documentar cada entrega.
-
-## Arquitectura de alto nivel
+## Arquitectura de solucion
 
 ```mermaid
 flowchart LR
-	UI[Angular Frontend] --> API[API Gateway or BFF]
+  UI[Angular Frontend] --> ORDAPI[order-service REST API]
+  UI --> SHPAPI[shipping-service REST API]
 
-	API --> ORD[order-service]
-	API --> SHP[shipping-service]
-	API --> INV[inventory-service]
-	API --> PAY[payment-service]
-	API --> NOTI[notification-service]
+  ORDAPI --> ORDDB[(PostgreSQL order_db)]
+  SHPAPI --> SHPDB[(PostgreSQL shipping_db)]
 
-	ORD --> ORDDB[(PostgreSQL order_db)]
-	SHP --> SHPDB[(PostgreSQL shipping_db)]
-	INV --> INVDB[(PostgreSQL inventory_db)]
-	PAY --> PAYDB[(PostgreSQL payment_db)]
+  ORDAPI -- ORDER_CREATED / ORDER_SHIPPED --> KAFKA[(Kafka)]
+  SHPAPI -- consume ORDER_CREATED --> KAFKA
+  SHPAPI -- publish SHIPPING_UPDATED --> KAFKA
+```
 
-	ORD -- publish --> KAFKA[(Kafka Cluster)]
-	SHP -- consume/publish --> KAFKA
-	INV -- consume/publish --> KAFKA
-	PAY -- consume/publish --> KAFKA
-	NOTI -- consume --> KAFKA
+## Capas por servicio (hexagonal)
+
+```mermaid
+flowchart TD
+  IN[Adapters In
+  REST / Messaging] --> APP[Application Use Cases]
+  APP --> DOMAIN[Domain Model]
+  APP --> PORTS[Ports In/Out]
+  PORTS --> OUT[Adapters Out
+  JPA / Kafka / External]
 ```
 
 ## Stack tecnologico
 
-- Java 17
-- Spring Boot 3.5.x
-- Maven
-- Spring Data JPA
-- PostgreSQL
-- Apache Kafka
-- Docker + Docker Compose
-- Spring Security + JWT (en roadmap de implementacion)
-- Angular 17+ + Tailwind (frontend en roadmap)
+- Backend: Java 17, Spring Boot 3.5.x, Spring Security, Maven, JPA, PostgreSQL.
+- Integracion: Apache Kafka, contratos de eventos versionados.
+- Frontend: Angular 17 standalone, TailwindCSS, SCSS, Jasmine + Karma.
+- Infra local: Docker Compose.
+- Calidad: pruebas unitarias/integracion, convenciones de commits y evidencia por KAN.
 
-## Estado actual
+## Alcance funcional implementado
 
-- Servicios inicializados: order-service y shipping-service.
-- Estructura hexagonal base implementada en ambos modulos.
-- Capa REST de ordenes operativa y shipping-service preparado para consumo Kafka.
-- Contratos de API y eventos definidos en v1.
+### Backend
+
+- API de ordenes con contrato OpenAPI v1.
+- Publicacion y consumo de eventos Kafka v1.
+- Seguridad base + soporte Swagger en `order-service`.
+- Resiliencia inicial con mecanismos de retry y DLQ.
+
+### Frontend (Epic 4)
+
+- KAN-18: bootstrap Angular + Tailwind + shell.
+- KAN-19 y KAN-30: autenticacion JWT, guard, interceptores y modelo de errores HTTP.
+- KAN-20: catalogo, carrito y checkout conectado a backend.
+- KAN-31: ciclo E2E de autenticacion con gestion de eventos de sesion.
+- KAN-32: seguimiento de pedido con actualizacion asincrona y estados de UX.
 
 ## Contratos oficiales
 
 - [Contrato OpenAPI v1 - order-service](docs/contracts/order-service-openapi-v1.yaml)
 - [Contrato de eventos Kafka v1](docs/contracts/kafka-events-v1.md)
 
-## Entregables Jira (KAN-22 a KAN-25)
+## Entregables Jira
 
+- [KAN-16 - Consumo ORDER_CREATED y generacion de envio](docs/kan/KAN-16-consumo-order-created-generacion-envio.md)
+- [KAN-18 - Inicializacion Angular y Tailwind](docs/kan/KAN-18-inicializacion-angular-tailwind.md)
+- [KAN-19 - Servicios de autenticacion y estado](docs/kan/KAN-19-servicios-autenticacion-estado-interceptor.md)
+- [KAN-20 - Vistas catalogo, carrito y compra](docs/kan/KAN-20-desarrollo-vistas-catalogo-carrito-compra.md)
 - [KAN-22 - OpenAPI v1](docs/kan/KAN-22-openapi-v1.md)
 - [KAN-23 - Contrato Kafka v1](docs/kan/KAN-23-kafka-contract-v1.md)
 - [KAN-24 - Observabilidad minima](docs/kan/KAN-24-observabilidad-minima.md)
 - [KAN-25 - Resiliencia retry y DLQ](docs/kan/KAN-25-resiliencia-retry-dlq.md)
+- [KAN-28 - Publicacion eventos de envio](docs/kan/KAN-28-publicacion-eventos-envio.md)
+- [KAN-29 - Pruebas integracion Kafka local](docs/kan/KAN-29-pruebas-integracion-kafka-local.md)
+- [KAN-30 - Modelo de integracion API y errores HTTP](docs/kan/KAN-30-modelo-integracion-apis-errores-http.md)
+- [KAN-31 - Flujo autenticacion E2E JWT](docs/kan/KAN-31-flujo-autenticacion-e2e-jwt.md)
+- [KAN-32 - Seguimiento de pedido asincrono](docs/kan/KAN-32-pantalla-seguimiento-pedido-estado-asincrono.md)
 
 ## Estructura de codigo
 
 ```text
+frontend/
+|- src/app/core            # auth, http, layout, guards, interceptors
+|- src/app/features        # auth, catalog, cart, checkout, tracking
+|- src/app/shared          # componentes compartidos
+
 order-service/src/main/java/com/ecommerce/order/
-|- adapter/
-|  |- in/
-|  |  |- controller/
-|  |- out/
-|     |- persistence/
-|- application/
-|- domain/
-|- ports/
+|- adapter/                # entrada REST, salida JPA/Kafka
+|- application/            # casos de uso
+|- domain/                 # entidades y reglas de negocio
+|- ports/                  # contratos in/out
 
 shipping-service/src/main/java/com/ecommerce/shipping/
 |- adapter/
-|  |- out/
-|     |- persistence/
 |- application/
-|  |- service/
 |- domain/
-|  |- model/
 |- ports/
-|  |- in/
-|  |- out/
 ```
 
-## Principios de integracion entre microservicios
+## Calidad y pruebas
 
-- REST para operaciones sincronas orientadas a cliente.
-- Kafka para eventos de dominio y coordinacion eventual.
-- Cada servicio es duenio de su propia base de datos.
-- Los consumidores de eventos deben ser idempotentes.
-- Versionado explicito de contratos para evolucion segura.
+### Backend
+
+- Ejecutar pruebas en cada servicio:
+
+```bash
+cd order-service
+./mvnw clean test
+```
+
+```bash
+cd shipping-service
+./mvnw clean test
+```
+
+### Frontend
+
+- Build de validacion:
+
+```bash
+cd frontend
+npm run build
+```
+
+- Suite unitaria:
+
+```bash
+cd frontend
+npm run test -- --watch=false --browsers=ChromeHeadless --progress=false
+```
 
 ## Ejecutar localmente
 
@@ -147,43 +177,52 @@ Set-Location shipping-service
 .\mvnw.cmd spring-boot:run
 ```
 
-### 4. Validar compilacion y tests
+### 4. Ejecutar frontend
 
 ```bash
-./mvnw clean test
+cd frontend
+npm install
+npm start
 ```
 
+En Windows con restriccion de scripts PowerShell, usar:
 
-## Flujo  de trabajo 
+```powershell
+cmd /c npm install
+cmd /c npm start
+```
 
-1. Definir alcance de subtarea con criterio de aceptacion claro.
-2. Implementar solo el alcance comprometido.
-3. Validar compile y tests.
-4. Actualizar subtarea Jira con evidencia tecnica.
-5. Realizar commit con mensaje orientado a resultado.
-6. Push a develop al cerrar un bloque funcional completo.
+## Flujo de trabajo
+
+1. Definir alcance de subtarea con criterio de aceptacion.
+2. Implementar en bloques pequenos y trazables.
+3. Validar build y tests antes de cerrar cada bloque.
+4. Actualizar evidencia tecnica en la KAN correspondiente.
+5. Confirmar cambios con mensaje de commit orientado a resultado.
+6. Integrar en rama principal de desarrollo.
 
 ## Ejemplos de commits
 
 - feat(order-service): implement order REST adapter and use case wiring
 - feat(shipping-service): bootstrap hexagonal module and local configuration
-- feat(contracts): add OpenAPI and Kafka event contracts v1
-- docs(readme): describe architecture, roadmap and delivery workflow
+- feat(frontend): add catalog cart checkout and tracking flows
+- test(frontend): add unit tests for cart and http response handling
+- docs(readme): publish architecture and quality strategy for portfolio
 
-## Roadmap propuesto
+## Roadmap tecnico
 
-1. Endurecer seguridad JWT y autorizacion por rol.
-2. Publicacion de eventos de orden en Kafka.
-3. Consumidores en shipping/inventory/payment.
-4. Implementar patron outbox para entrega confiable de eventos.
-5. Agregar observabilidad (logs estructurados, metricas, tracing).
-6. Construir frontend Angular conectado por contratos.
+1. Expandir cobertura de tests frontend (interceptores, guard, tracking service).
+2. Agregar pruebas E2E de punta a punta sobre flujo de compra.
+3. Endurecer seguridad por rol y politicas de autorizacion.
+4. Implementar outbox en publicacion de eventos criticos.
+5. Incorporar observabilidad distribuida (metricas y trazas).
 
-## Valor para reclutadores y clientes
+## Valor profesional
 
-Este repositorio esta orientado a demostrar capacidad real en:
+Este repositorio demuestra:
 
-- Diseño de sistemas distribuidos.
-- Implementacion backend moderna con Java/Spring.
-- Integracion event-driven con Kafka.
-- Practicas profesionales de documentacion y entrega incremental.
+- Diseno y evolucion de sistemas distribuidos.
+- Implementacion de microservicios con principios de arquitectura limpia.
+- Integracion event-driven con contratos versionados.
+- Ejecucion de un frontend moderno alineado a contrato backend.
+- Disciplina de entrega profesional con evidencia, pruebas y documentacion.
