@@ -21,13 +21,8 @@ export class CatalogPageComponent {
     { value: 'all', label: 'Todas' },
     { value: 'portatiles', label: 'Portatiles' },
     { value: 'tablets', label: 'Tablets' },
-    { value: 'sobremesas', label: 'Sobremesas' },
-    { value: 'monitores', label: 'Monitores' },
     { value: 'componentes', label: 'Componentes' },
-    { value: 'accesorios-informatica', label: 'Accesorios de informatica' },
-    { value: 'impresoras-tinta', label: 'Impresoras y tinta' },
     { value: 'software', label: 'Software' },
-    { value: 'gaming', label: 'Gaming' },
     { value: 'juegos-pc', label: 'Juegos para PC' },
     { value: 'auriculares', label: 'Auriculares' },
     { value: 'raton', label: 'Raton' },
@@ -35,11 +30,19 @@ export class CatalogPageComponent {
     { value: 'lampara', label: 'Lampara' },
     { value: 'base-escritorio', label: 'Bases de escritorio' },
   ];
+  readonly categoryCounts = this.categories.reduce<Record<string, number>>((acc, category) => {
+    acc[category.value] =
+      category.value === 'all'
+        ? this.products.length
+        : this.products.filter((product) => product.category === category.value).length;
+    return acc;
+  }, {});
 
   selectedCategory = 'all';
   searchTerm = '';
   maxPrice = this.maxAvailablePrice;
   feedbackMessage = '';
+  filteredProducts: Product[] = [];
 
   private normalizeText(value: string): string {
     return value
@@ -57,11 +60,14 @@ export class CatalogPageComponent {
       const q = params.get('q');
       if (q !== null) {
         this.searchTerm = q;
+        this.applyFilters();
       }
     });
+
+    this.applyFilters();
   }
 
-  get filteredProducts(): Product[] {
+  private computeFilteredProducts(): Product[] {
     const search = this.normalizeText(this.searchTerm);
     return this.products.filter((product) => {
       const categoryMatch = this.selectedCategory === 'all' || product.category === this.selectedCategory;
@@ -77,18 +83,37 @@ export class CatalogPageComponent {
     });
   }
 
-  getCategoryCount(category: string): number {
-    if (category === 'all') {
-      return this.products.length;
-    }
+  private applyFilters(): void {
+    this.filteredProducts = this.computeFilteredProducts();
+  }
 
-    return this.products.filter((product) => product.category === category).length;
+  trackByCategory(_: number, category: { value: string; label: string }): string {
+    return category.value;
+  }
+
+  trackByProduct(_: number, product: Product): number {
+    return product.id;
+  }
+
+  onSearchTermChange(value: string): void {
+    this.searchTerm = value;
+    this.applyFilters();
+  }
+
+  onMaxPriceChange(value: number): void {
+    this.maxPrice = Number(value);
+    this.applyFilters();
+  }
+
+  getCategoryCount(category: string): number {
+    return this.categoryCounts[category] ?? 0;
   }
 
   selectCategory(category: string): void {
     this.selectedCategory = category;
     this.searchTerm = '';
     this.maxPrice = this.maxAvailablePrice;
+    this.applyFilters();
   }
 
   onCategoryChange(): void {

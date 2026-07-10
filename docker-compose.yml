@@ -3,6 +3,8 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: ecommerce-postgres
+    mem_limit: 512m
+    cpus: 0.50
     ports:
       - "5432:5432"
     environment:
@@ -19,6 +21,8 @@ services:
   kafka-1:
     image: confluentinc/cp-kafka:7.5.0
     container_name: ecommerce-kafka-1
+    mem_limit: 900m
+    cpus: 0.75
     ports:
       - "19092:19092"
     environment:
@@ -46,6 +50,8 @@ services:
   kafka-2:
     image: confluentinc/cp-kafka:7.5.0
     container_name: ecommerce-kafka-2
+    mem_limit: 900m
+    cpus: 0.75
     ports:
       - "29092:29092"
     environment:
@@ -73,6 +79,8 @@ services:
   kafka-3:
     image: confluentinc/cp-kafka:7.5.0
     container_name: ecommerce-kafka-3
+    mem_limit: 900m
+    cpus: 0.75
     ports:
       - "39092:39092"
     environment:

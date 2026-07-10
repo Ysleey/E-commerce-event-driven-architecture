@@ -178,6 +178,12 @@ Desde la raiz del repositorio:
 docker compose up -d
 ```
 
+Modo rapido (menos consumo local: Postgres + 1 broker Kafka):
+
+```bash
+docker compose -f docker-compose.lite.yml up -d
+```
+
 ### 2. Ejecutar order-service
 
 ```bash
@@ -212,6 +218,13 @@ Set-Location shipping-service
 cd frontend
 npm install
 npm start
+```
+
+Modo frontend ligero:
+
+```bash
+cd frontend
+npm run start:fast
 ```
 
 En Windows con restriccion de scripts PowerShell, usar:

@@ -37,7 +37,9 @@ src/app/
 ## Scripts principales
 
 - `npm start`: servidor de desarrollo.
+- `npm run start:fast`: desarrollo ligero (sin sourcemaps ni live reload para menor consumo).
 - `npm run build`: compilacion de produccion.
+- `npm run build:prod`: alias explicito para compilacion de produccion.
 - `npm run test -- --watch=false --browsers=ChromeHeadless --progress=false`: pruebas unitarias.
 - `npm run lint`: analisis estatico ESLint.
 - `npm run lint:fix`: correcciones automaticas de lint.

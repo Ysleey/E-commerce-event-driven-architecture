@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecommerce-postgres-lite
+    mem_limit: 512m
+    cpus: 0.50
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: user_ecommerce
+      POSTGRES_PASSWORD: password_ecommerce
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data_lite:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - ecommerce-network-lite
+
+  kafka-1:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: ecommerce-kafka-lite
+    mem_limit: 900m
+    cpus: 0.75
+    ports:
+      - "19092:19092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_LISTENERS: 'INTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:19092'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka-1:9092,EXTERNAL://localhost:19092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:9093'
+      KAFKA_LOG_DIRS: '/var/lib/kafka/data'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
+    volumes:
+      - kafka_lite_data:/var/lib/kafka/data
+    networks:
+      - ecommerce-network-lite
+
+volumes:
+  postgres_data_lite:
+  kafka_lite_data:
+
+networks:
+  ecommerce-network-lite:
+    driver: bridge
