@@ -88,6 +88,8 @@ sequenceDiagram
 
 - [Contrato OpenAPI v1 - order-service](docs/contracts/order-service-openapi-v1.yaml)
 - [Contrato de eventos Kafka v1](docs/contracts/kafka-events-v1.md)
+- [Versionado de contratos](docs/contracts/VERSIONING.md)
+- [Changelog de contratos](docs/contracts/CHANGELOG.md)
 
 ## Entregables Jira
 
@@ -169,6 +171,14 @@ npm run build
 cd frontend
 npm run test -- --watch=false --browsers=ChromeHeadless --progress=false
 ```
+
+## CI y quality gates
+
+- Pipeline GitHub Actions en [.github/workflows/ci.yml](.github/workflows/ci.yml).
+- Build y test automatizados para `order-service`, `shipping-service` y `frontend`.
+- Umbral minimo de cobertura frontend aplicado en CI.
+- Cobertura minima backend aplicada via JaCoCo en ambos servicios.
+- Baseline inicial de cobertura: 30% para evitar que la calidad minima se degrade mientras se sigue ampliando la suite.
 
 ## Ejecutar localmente
 
