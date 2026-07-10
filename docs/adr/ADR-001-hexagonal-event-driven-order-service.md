@@ -1,6 +1,5 @@
 # ADR-001: Arquitectura hexagonal + eventos Kafka para order-service
 
-- Estado: Aprobado
 - Fecha: 2026-07-09
 - Ambito: `order-service`
 

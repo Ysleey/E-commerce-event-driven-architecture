@@ -93,23 +93,8 @@ sequenceDiagram
 
 ## Entregables Jira
 
-- [KAN-16 - Consumo ORDER_CREATED y generacion de envio](docs/kan/KAN-16-consumo-order-created-generacion-envio.md)
-- [KAN-18 - Inicializacion Angular y Tailwind](docs/kan/KAN-18-inicializacion-angular-tailwind.md)
-- [KAN-19 - Servicios de autenticacion y estado](docs/kan/KAN-19-servicios-autenticacion-estado-interceptor.md)
-- [KAN-20 - Vistas catalogo, carrito y compra](docs/kan/KAN-20-desarrollo-vistas-catalogo-carrito-compra.md)
-- [KAN-22 - OpenAPI v1](docs/kan/KAN-22-openapi-v1.md)
-- [KAN-23 - Contrato Kafka v1](docs/kan/KAN-23-kafka-contract-v1.md)
-- [KAN-24 - Observabilidad minima](docs/kan/KAN-24-observabilidad-minima.md)
-- [KAN-25 - Resiliencia retry y DLQ](docs/kan/KAN-25-resiliencia-retry-dlq.md)
-- [KAN-28 - Publicacion eventos de envio](docs/kan/KAN-28-publicacion-eventos-envio.md)
-- [KAN-29 - Pruebas integracion Kafka local](docs/kan/KAN-29-pruebas-integracion-kafka-local.md)
-- [KAN-30 - Modelo de integracion API y errores HTTP](docs/kan/KAN-30-modelo-integracion-apis-errores-http.md)
-- [KAN-31 - Flujo autenticacion E2E JWT](docs/kan/KAN-31-flujo-autenticacion-e2e-jwt.md)
-- [KAN-32 - Seguimiento de pedido asincrono](docs/kan/KAN-32-pantalla-seguimiento-pedido-estado-asincrono.md)
-- [KAN-38 - Configuracion integracion frontend-backend](docs/kan/KAN-38-configuracion-integracion-frontend-backend.md)
-- [KAN-39 - Calidad tecnica frontend](docs/kan/KAN-39-calidad-tecnica-frontend.md)
-- [KAN-40 - Observabilidad y trazabilidad minima](docs/kan/KAN-40-ci-minima-frontend.md)
-- [KAN-41 - Evidencia y cierre de portafolio](docs/kan/KAN-41-evidencia-cierre-portafolio-epica.md)
+- [Indice completo de KAN](docs/kan/README.md)
+- [Matriz de trazabilidad Jira-GitHub](docs/portfolio/traceability-matrix.md)
 
 ## Artefactos de arquitectura y portfolio
 
@@ -117,7 +102,10 @@ sequenceDiagram
 - [ADR-001 Hexagonal + Event-Driven](docs/adr/ADR-001-hexagonal-event-driven-order-service.md)
 - [Matriz de trazabilidad Jira-GitHub](docs/portfolio/traceability-matrix.md)
 - [Checklist de demo visual](docs/portfolio/demo-checklist.md)
+- [Checklist de cierre final](docs/portfolio/project-closure-checklist.md)
 - [Guia de limpieza de ramas](docs/portfolio/branch-cleanup.md)
+- [Evidencia visual de Jira](docs/jira/README.md)
+- [Coleccion Postman automatizada](docs/postman/README.md)
 
 ## Estructura de codigo
 

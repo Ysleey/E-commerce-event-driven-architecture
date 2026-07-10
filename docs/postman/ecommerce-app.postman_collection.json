@@ -1,0 +1,806 @@
+{
+  "info": {
+    "_postman_id": "d3c9c5d7-0e86-4b47-8f6b-0c5f4b9f2a01",
+    "name": "E-commerce Event-Driven Architecture - Smoke Tests",
+    "description": "Coleccion para validar autenticacion, flujo de pedidos y health checks del backend con variables de entorno locales.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const timestamp = Date.now();",
+          "pm.environment.set('correlationId', `pm-${timestamp}-${Math.random().toString(16).slice(2, 8)}`);",
+          "if (!pm.environment.get('createdOrderNumber')) {",
+          "  pm.environment.set('createdOrderNumber', `ORD-${timestamp}`);",
+          "}",
+          "if (!pm.environment.get('invoiceNumber')) {",
+          "  pm.environment.set('invoiceNumber', `INV-${timestamp}`);",
+          "}",
+          "if (!pm.environment.get('trackingNumber')) {",
+          "  pm.environment.set('trackingNumber', `TRK-${timestamp}`);",
+          "}",
+          "if (!pm.environment.get('customerId')) {",
+          "  pm.environment.set('customerId', '1001');",
+          "}",
+          "if (!pm.environment.get('productId')) {",
+          "  pm.environment.set('productId', '501');",
+          "}",
+          "if (!pm.environment.get('paymentId')) {",
+          "  pm.environment.set('paymentId', '701');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login admin",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/v1/auth/login",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Obtiene el JWT de demostracion y lo guarda en `accessToken` para el resto de la collection."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var body = pm.response.json();",
+                  "pm.environment.set('accessToken', body.token);",
+                  "pm.environment.set('tokenType', body.tokenType || 'Bearer');",
+                  "pm.environment.set('activeUser', body.username || 'admin');",
+                  "pm.test('JWT recibido', function () {",
+                  "  pm.expect(pm.environment.get('accessToken')).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Orders - Smoke",
+      "item": [
+        {
+          "name": "Create order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": {{customerId}},\n  \"productId\": {{productId}},\n  \"paymentId\": {{paymentId}},\n  \"orderNumber\": \"{{createdOrderNumber}}\",\n  \"invoiceNumber\": \"{{invoiceNumber}}\",\n  \"notes\": \"Smoke test generado desde Postman\",\n  \"customerContact\": {\n    \"customerName\": \"{{customerName}}\",\n    \"customerEmail\": \"{{customerEmail}}\",\n    \"customerPhone\": \"{{customerPhone}}\"\n  },\n  \"financials\": {\n    \"price\": {{price}},\n    \"discountAmount\": {{discountAmount}},\n    \"taxAmount\": {{taxAmount}},\n    \"shippingAmount\": {{shippingAmount}},\n    \"totalAmount\": {{totalAmount}},\n    \"couponCode\": \"POSTMAN-10\",\n    \"currency\": \"{{currency}}\"\n  },\n  \"shippingInfo\": {\n    \"paymentMethod\": \"{{paymentMethod}}\",\n    \"shippingMethod\": \"{{shippingMethod}}\",\n    \"trackingNumber\": \"{{trackingNumber}}\",\n    \"shippingAddress\": \"{{shippingAddress}}\",\n    \"billingAddress\": \"{{billingAddress}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            },
+            "description": "Crea una orden base que alimenta el resto del smoke test."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Create order responde 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "var body = pm.response.json();",
+                  "pm.environment.set('orderId', String(body.id));",
+                  "pm.environment.set('createdOrderNumber', body.orderNumber || pm.environment.get('createdOrderNumber'));",
+                  "pm.environment.set('trackingNumber', body.shippingInfo && body.shippingInfo.trackingNumber ? body.shippingInfo.trackingNumber : pm.environment.get('trackingNumber'));",
+                  "pm.environment.set('lastOrderStatus', body.status || 'CREATED');",
+                  "pm.test('Se guardo el orderId', function () {",
+                  "  pm.expect(pm.environment.get('orderId')).to.be.a('string').and.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get order by id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}"
+              ]
+            },
+            "description": "Consulta la orden creada por id interno."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Get order by id responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var body = pm.response.json();",
+                  "pm.test('Coincide el id de la orden', function () {",
+                  "  pm.expect(String(body.id)).to.eql(String(pm.environment.get('orderId')));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get order by order number",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/by-order-number/{{createdOrderNumber}}",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "by-order-number",
+                "{{createdOrderNumber}}"
+              ]
+            },
+            "description": "Busca la misma orden por numero de negocio."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Get by order number responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var body = pm.response.json();",
+                  "pm.test('Coincide el orderNumber', function () {",
+                  "  pm.expect(body.orderNumber).to.eql(pm.environment.get('createdOrderNumber'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get order by tracking number",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/by-tracking-number/{{trackingNumber}}",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "by-tracking-number",
+                "{{trackingNumber}}"
+              ]
+            },
+            "description": "Busca la orden por numero de seguimiento."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Get by tracking number responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var body = pm.response.json();",
+                  "pm.test('Coincide el trackingNumber', function () {",
+                  "  pm.expect(body.shippingInfo.trackingNumber).to.eql(pm.environment.get('trackingNumber'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get orders by customer",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/customer/{{customerId}}",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "customer",
+                "{{customerId}}"
+              ]
+            },
+            "description": "Lista las ordenes del cliente usado en el smoke test."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Get by customer responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var body = pm.response.json();",
+                  "pm.test('La respuesta es un arreglo', function () {",
+                  "  pm.expect(body).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update shipping address",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newAddress\": \"{{newShippingAddress}}\"\n}"
+            },
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}/shipping-address",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}",
+                "shipping-address"
+              ]
+            },
+            "description": "Actualiza la direccion de envio de la orden creada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Update shipping address responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var body = pm.response.json();",
+                  "pm.test('La direccion se actualizo', function () {",
+                  "  pm.expect(body.shippingInfo.shippingAddress).to.eql(pm.environment.get('newShippingAddress'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ship order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"trackingNumber\": \"{{trackingNumber}}\"\n}"
+            },
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}/ship",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}",
+                "ship"
+              ]
+            },
+            "description": "Marca la orden como enviada y conserva el numero de tracking."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Ship order responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var body = pm.response.json();",
+                  "pm.test('El tracking se conserva', function () {",
+                  "  pm.expect(body.shippingInfo.trackingNumber).to.eql(pm.environment.get('trackingNumber'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Complete order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}/complete",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}",
+                "complete"
+              ]
+            },
+            "description": "Cierra el flujo happy path de la orden creada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Complete order responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "var body = pm.response.json();",
+                  "pm.test('La orden sigue siendo la misma', function () {",
+                  "  pm.expect(String(body.id)).to.eql(String(pm.environment.get('orderId')));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Orders - Manual lifecycle",
+      "description": "Acciones de post-venta que dependen del estado de la orden. Ejecutar sobre una orden dedicada para evitar fallos por transiciones incompatibles.",
+      "item": [
+        {
+          "name": "Cancel order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"{{cancelReason}}\"\n}"
+            },
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}/cancel",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}",
+                "cancel"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Cancel order responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Return order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"{{returnReason}}\"\n}"
+            },
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}/return",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}",
+                "return"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Return order responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refund order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-Correlation-Id",
+                "value": "{{correlationId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{orderServiceUrl}}/api/orders/{{orderId}}/refund",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "api",
+                "orders",
+                "{{orderId}}",
+                "refund"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Refund order responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Actuator",
+      "item": [
+        {
+          "name": "Order service health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orderServiceUrl}}/actuator/health",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Health de order-service responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Order service info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orderServiceUrl}}/actuator/info",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "info"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Info de order-service responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Order service metrics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{orderServiceUrl}}/actuator/metrics",
+              "host": [
+                "{{orderServiceUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "metrics"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Metrics de order-service responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Shipping service health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{shippingServiceUrl}}/actuator/health",
+              "host": [
+                "{{shippingServiceUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Health de shipping-service responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Shipping service info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{shippingServiceUrl}}/actuator/info",
+              "host": [
+                "{{shippingServiceUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "info"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Info de shipping-service responde 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
