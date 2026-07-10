@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
@@ -42,7 +43,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootTest(classes = ShippingServiceApplication.class)
 @ActiveProfiles("test")
+@EmbeddedKafka(partitions = 1, topics = {
+		"ecommerce.order.events.it",
+		"ecommerce.shipping.events.it",
+		"ecommerce.order.events.it.dlq"
+})
 @TestPropertySource(properties = {
+		"spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
 		"spring.kafka.listener.auto-startup=true",
 		"spring.kafka.consumer.group-id=shipping-service-it",
 		"app.kafka.topics.order-events=ecommerce.order.events.it",
