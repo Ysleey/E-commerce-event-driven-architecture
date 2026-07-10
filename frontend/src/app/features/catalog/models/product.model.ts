@@ -1,10 +1,11 @@
 export interface Product {
   id: number;
   name: string;
-  category: 'audio' | 'lifestyle' | 'gaming' | 'office';
+  category: string;
   price: number;
   description: string;
   badge?: string;
   imageUrl: string;
+  searchTerms?: string[];
   stock: number;
 }

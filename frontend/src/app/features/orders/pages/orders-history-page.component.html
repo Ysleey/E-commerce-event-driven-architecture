@@ -1,0 +1,66 @@
+<section class="space-y-6">
+  <header class="rounded-3xl border border-line bg-card p-6 shadow-soft sm:p-8">
+    <h1 class="font-display text-3xl font-bold text-ink sm:text-4xl">Mis pedidos</h1>
+    <p class="mt-3 text-sm leading-relaxed text-muted">
+      Historial demo persistido en este navegador para poder relanzar seguimiento y enseñar compras anteriores durante la demo.
+    </p>
+  </header>
+
+  <ng-container *ngIf="orderHistory.history().length > 0; else emptyHistory">
+    <section class="grid gap-4 lg:grid-cols-2">
+      <article *ngFor="let item of orderHistory.history()" class="rounded-3xl border border-line bg-card p-5 shadow-soft">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p class="text-lg font-bold text-ink">{{ item.orderNumber }}</p>
+            <p class="mt-1 text-xs uppercase tracking-[0.12em] text-muted">Tracking: {{ item.trackingNumber }}</p>
+          </div>
+          <span class="rounded-full border border-line px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-brand-100">{{ item.status }}</span>
+        </div>
+
+        <div class="mt-4 rounded-2xl border border-line bg-surface/60 p-4">
+          <p class="text-sm font-semibold text-ink">{{ item.customerName }}</p>
+          <p class="mt-1 text-sm text-muted">{{ item.customerEmail }}</p>
+          <p class="mt-1 text-sm text-muted">Creado: {{ item.createdAt | date:'medium' }}</p>
+          <p class="mt-3 text-sm text-muted">{{ item.items.length }} productos · Total {{ item.total | currency:'EUR' }}</p>
+          <p class="mt-1 text-xs text-muted">Pago demo: {{ item.paymentMethod }} · Envio: {{ item.shippingMethod }}</p>
+        </div>
+
+        <div class="mt-4 space-y-3">
+          <div *ngFor="let product of item.items" class="flex items-center justify-between gap-3 rounded-xl border border-line bg-surface/60 px-4 py-3">
+            <div>
+              <p class="text-sm font-semibold text-ink">{{ product.name }}</p>
+              <p class="text-xs text-muted">Cantidad: {{ product.quantity }} · Unitario: {{ product.unitPrice | currency:'EUR' }}</p>
+            </div>
+            <p class="text-sm font-bold text-brand-100">{{ product.lineTotal | currency:'EUR' }}</p>
+          </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2">
+          <a
+            routerLink="/seguimiento"
+            [queryParams]="{ mode: 'orderNumber', value: item.orderNumber, autoSearch: '1' }"
+            class="rounded-xl bg-brand-400 px-4 py-2.5 text-xs font-bold text-[#1e1510] transition hover:bg-brand-300"
+          >
+            Ir a seguimiento por pedido
+          </a>
+          <a
+            routerLink="/seguimiento"
+            [queryParams]="{ mode: 'trackingNumber', value: item.trackingNumber, autoSearch: '1' }"
+            class="rounded-xl border border-line px-4 py-2.5 text-xs font-bold text-muted transition hover:bg-surface hover:text-ink"
+          >
+            Ir a seguimiento por tracking
+          </a>
+        </div>
+      </article>
+    </section>
+  </ng-container>
+
+  <ng-template #emptyHistory>
+    <app-empty-state-card
+      title="Aun no hay pedidos guardados"
+      description="Completa una compra en checkout para poblar el historial demo y reutilizarlo en seguimiento."
+      actionLabel="Ir a checkout"
+      actionLink="/checkout"
+    />
+  </ng-template>
+</section>

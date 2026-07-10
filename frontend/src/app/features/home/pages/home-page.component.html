@@ -1,36 +1,102 @@
-<section class="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-  <article class="rounded-3xl border border-line bg-card p-8 shadow-soft">
-    <p class="inline-flex rounded-full bg-brand-900/60 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-brand-100">
-      KAN-18 en progreso
-    </p>
-    <h1 class="mt-4 font-display text-4xl font-bold leading-tight text-ink sm:text-5xl">
-      Frontend profesional para tu portfolio de e-commerce
-    </h1>
-    <p class="mt-5 max-w-2xl text-base leading-relaxed text-muted">
-      Esta base deja listo el enrutado principal, una capa visual coherente y la estructura necesaria para integrar autenticacion,
-      catalogo, carrito, checkout y seguimiento asincorno.
-    </p>
+<section
+  class="overflow-hidden rounded-3xl border border-line bg-gradient-to-br from-[#2f2218] via-[#211811] to-[#16100c] p-6 shadow-soft transition-all duration-700 sm:p-10"
+  [ngClass]="isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'"
+>
+  <div class="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+    <article>
+      <p class="inline-flex rounded-full bg-brand-900/65 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-brand-100">
+        Portafolio Nicola Di Sabato
+      </p>
+      <h1 class="mt-4 max-w-3xl font-display text-4xl font-bold leading-tight text-ink sm:text-5xl xl:text-6xl">
+        Compra moderna con experiencia real y arquitectura de microservicios
+      </h1>
+      <p class="mt-5 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
+        Plataforma de e-commerce enfocada en catalogo electronico, con frontend Angular y backend de microservicios que demuestra autenticacion JWT, flujos asincronos y trazabilidad operativa de punta a punta.
+      </p>
 
-    <div class="mt-8 flex flex-wrap gap-3">
-      <a routerLink="/catalogo" class="rounded-xl bg-brand-400 px-5 py-3 text-sm font-bold text-[#1e1510] transition hover:bg-brand-300">Ir a catalogo</a>
-      <a routerLink="/login" class="rounded-xl border border-line px-5 py-3 text-sm font-bold text-muted transition hover:bg-surface hover:text-ink">Preparar login JWT</a>
-    </div>
-  </article>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a routerLink="/catalogo" class="rounded-xl bg-brand-400 px-5 py-3 text-sm font-bold text-[#1e1510] transition hover:bg-brand-300">
+          Explorar catalogo
+        </a>
+        <a routerLink="/stack-tecnologico" class="rounded-xl border border-line px-5 py-3 text-sm font-bold text-muted transition hover:bg-surface hover:text-ink">
+          Ver stack tecnologico
+        </a>
+      </div>
 
-  <article class="rounded-3xl border border-brand-900/70 bg-gradient-to-br from-[#32261d] to-[#241d17] p-8 shadow-soft">
-    <h2 class="font-display text-2xl font-bold text-brand-100">Siguientes entregables</h2>
-    <ul class="mt-5 space-y-3 text-sm text-muted">
-      <li class="rounded-xl border border-line/60 bg-surface/65 p-3">KAN-19: auth service + interceptor</li>
-      <li class="rounded-xl border border-line/60 bg-surface/65 p-3">KAN-30: modelo HTTP y errores</li>
-      <li class="rounded-xl border border-line/60 bg-surface/65 p-3">KAN-20: vistas de compra y checkout</li>
-      <li class="rounded-xl border border-line/60 bg-surface/65 p-3">KAN-31/32: flujo e2e y seguimiento</li>
-    </ul>
-  </article>
+      <div class="mt-5 flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.08em] text-muted">
+        <a href="https://www.linkedin.com/in/nico-di-sabato/" target="_blank" rel="noopener noreferrer" class="rounded-lg border border-line px-3 py-2 transition hover:border-brand-700/80 hover:text-ink">
+          LinkedIn: linkedin.com/in/nico-di-sabato
+        </a>
+        <a href="https://github.com/Ysleey/E-commerce-event-driven-architecture" target="_blank" rel="noopener noreferrer" class="rounded-lg border border-line px-3 py-2 transition hover:border-brand-700/80 hover:text-ink">
+          GitHub del proyecto
+        </a>
+      </div>
+    </article>
+
+    <article class="rounded-2xl border border-line/70 bg-surface/60 p-6">
+      <h2 class="font-display text-2xl font-bold text-ink">Busqueda rapida</h2>
+      <p class="mt-2 text-sm text-muted">Encuentra productos en segundos y navega directo al catalogo.</p>
+
+      <div class="mt-5 flex gap-2">
+        <input
+          type="text"
+          [(ngModel)]="searchQuery"
+          (keydown.enter)="executeSearch()"
+          placeholder="Busca laptop, audifonos, smartwatch..."
+          class="w-full rounded-xl border border-line bg-card px-4 py-3 text-sm text-ink placeholder:text-muted focus:border-brand-500 focus:outline-none"
+        />
+        <button
+          type="button"
+          (click)="executeSearch()"
+          class="inline-flex items-center justify-center rounded-xl bg-brand-400 px-4 py-3 text-sm font-bold text-[#1e1510] transition hover:bg-brand-300"
+        >
+          Buscar
+        </button>
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button
+          type="button"
+          *ngFor="let term of quickSearchTerms"
+          (click)="applyQuickSearch(term)"
+          class="rounded-full border border-line bg-card px-3 py-1 text-xs text-muted transition hover:-translate-y-0.5 hover:border-brand-700/80 hover:text-ink"
+        >
+          {{ term }}
+        </button>
+      </div>
+    </article>
+  </div>
 </section>
 
-<section class="mt-8 grid gap-4 md:grid-cols-3">
-  <article *ngFor="let item of highlights" class="rounded-2xl border border-line bg-card p-5 shadow-soft">
-    <h3 class="font-display text-xl font-bold text-ink">{{ item.title }}</h3>
-    <p class="mt-2 text-sm leading-relaxed text-muted">{{ item.description }}</p>
-  </article>
+<section class="mt-10 transition-all duration-700" [ngClass]="isLoaded ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'" [style.transitionDelay.ms]="120">
+  <div class="mb-5 flex items-end justify-between gap-3">
+    <div>
+      <h2 class="font-display text-3xl font-bold text-ink">Productos destacados</h2>
+      <p class="mt-1 text-sm text-muted">Selecciones de alto impacto para una demo funcional de producto real.</p>
+    </div>
+    <a routerLink="/catalogo" class="text-sm font-semibold text-brand-200 transition hover:text-brand-100">Ver todo</a>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <article
+      *ngFor="let product of featuredProducts; let i = index"
+      class="group overflow-hidden rounded-2xl border border-line bg-card shadow-soft transition duration-300 hover:-translate-y-1 hover:border-brand-700/70"
+      [style.transitionDelay.ms]="i * 40"
+    >
+      <img [src]="product.image" [alt]="product.name" class="h-40 w-full object-cover" />
+      <div class="p-4">
+        <p class="inline-flex rounded-full bg-brand-900/60 px-2 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-brand-100">
+          {{ product.tag }}
+        </p>
+        <h3 class="mt-3 font-display text-xl font-bold text-ink">{{ product.name }}</h3>
+        <p class="mt-1 text-sm text-muted">{{ product.rating }} / 5 rating</p>
+        <div class="mt-4 flex items-center justify-between">
+          <span class="text-lg font-bold text-brand-100">{{ product.price }}</span>
+          <a routerLink="/catalogo" class="rounded-lg border border-line px-3 py-2 text-xs font-semibold text-muted transition hover:bg-surface hover:text-ink group-hover:border-brand-700/80">
+            Ver detalle
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
 </section>

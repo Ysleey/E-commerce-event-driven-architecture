@@ -1,0 +1,97 @@
+<section class="space-y-6">
+  <header class="rounded-3xl border border-line bg-card p-6 shadow-soft sm:p-8">
+    <h1 class="font-display text-3xl font-bold text-ink sm:text-4xl">Stack tecnológico</h1>
+    <p class="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
+      Resumen técnico del proyecto para explicar arquitectura, decisiones de integración y enfoque de entrega.
+    </p>
+  </header>
+
+  <section class="rounded-3xl border border-line bg-card p-6 shadow-soft sm:p-8">
+    <h2 class="font-display text-2xl font-bold text-ink">Perfil profesional</h2>
+    <p class="mt-3 text-sm leading-relaxed text-muted">
+    Backend Software Developer y Líder Técnico apasionado por la ingeniería de software de calidad, el diseño eficiente y los sistemas escalables.
+    </p>
+    <p class="mt-3 text-sm leading-relaxed text-muted">
+        Mi experiencia principal se centra en el desarrollo de servicios críticos utilizando Java (17-21) y Spring Boot, optimizando la persistencia con MongoDB Atlas y diseñando APIs REST robustas bajo arquitecturas distribuidas (Hexagonal y Microservicios). Soy un firme defensor de la excelencia técnica, por lo que integro de forma natural el análisis de código limpio (Clean Code), principios SOLID y pruebas automatizadas con JUnit y Mockito, promoviendo prácticas de TDD para garantizar la resiliencia en producción.
+    </p>
+    <p class="mt-3 text-sm leading-relaxed text-muted">
+      Cuenta con certificacion en Kafka y esta finalizando certificacion en AWS, reforzando capacidades para arquitecturas cloud-native y event-driven.
+    </p>
+    <p class="mt-3 text-sm leading-relaxed text-muted">
+        Tengo un perfil versátil que me permite equilibrar el desarrollo de software de alto rendimiento con el liderazgo técnico de equipos. Me adapto con rapidez a ecosistemas complejos y tengo facilidad para traducir requerimientos de negocio abstractos (épicas e historias de usuario) en tareas técnicas atómicas, claras y priorizadas. Mi objetivo en cada proyecto es mantener al equipo cohesionado, asegurar una documentación impecable (Swagger/OpenAPI) y cumplir de forma rigurosa con los plazos de entrega bajo metodologías ágiles.
+        Afronto los retos técnicos con una mentalidad analítica, resolutiva y con una gran iniciativa para investigar y adoptar nuevas tecnologías cuando el producto lo requiere.
+    </p>
+    <p class="mt-4 text-xs leading-relaxed text-muted">
+      Tech Stack & Competencias: • Backend: Java (17-21), Spring Boot, Spring Data, Microservicios, Maven. • Datos & Entorno: MongoDB Atlas, Git, Swagger/OpenAPI. • Calidad & Testing: JUnit 5, Mockito, TDD (Test-Driven Development), Code Review. • Patrones & Arquitectura: Arquitectura Hexagonal, Principios SOLID, Clean Code. • Liderazgo & Agilidad: Tech Lead, Gestión de carga de trabajo, Kanban, Jira.
+    </p>
+    <div class="mt-5 flex flex-wrap gap-3">
+      <a
+        href="https://www.linkedin.com/in/nico-di-sabato/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="rounded-xl bg-brand-400 px-4 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-[#1e1510] transition hover:bg-brand-300"
+      >
+        LinkedIn: linkedin.com/in/nico-di-sabato
+      </a>
+      <a
+        href="https://github.com/Ysleey/E-commerce-event-driven-architecture"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="rounded-xl border border-line px-4 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-muted transition hover:bg-surface hover:text-ink"
+      >
+        Ver GitHub del proyecto
+      </a>
+    </div>
+  </section>
+
+  <section class="grid gap-4 lg:grid-cols-[1fr_1.1fr]">
+    <article class="rounded-2xl border border-line bg-card p-5 shadow-soft">
+      <h2 class="font-display text-2xl font-bold text-ink">Bloques del stack</h2>
+      <p class="mt-2 text-sm text-muted">Selecciona un bloque para ver su rol en la arquitectura.</p>
+
+      <div class="mt-4 space-y-3">
+        <button
+          type="button"
+          *ngFor="let card of stackCards; let i = index"
+          (click)="setActiveStack(i)"
+          class="w-full rounded-xl border p-4 text-left transition hover:border-brand-700/70"
+          [ngClass]="activeStackIndex === i ? 'border-brand-700/90 bg-brand-900/30' : 'border-line bg-surface/60'"
+        >
+          <p class="text-sm font-bold text-ink">{{ card.title }}</p>
+          <p class="mt-1 text-xs text-muted">{{ card.tech }}</p>
+        </button>
+      </div>
+    </article>
+
+    <article class="rounded-2xl border border-brand-800/60 bg-gradient-to-br from-[#30261e] to-[#211a14] p-5 shadow-soft">
+      <p class="text-xs font-semibold uppercase tracking-[0.13em] text-brand-100/90">Componente activo</p>
+      <h3 class="mt-2 font-display text-2xl font-bold text-brand-100">{{ activeStackCard.title }}</h3>
+      <p class="mt-2 text-sm text-brand-200">{{ activeStackCard.tech }}</p>
+      <p class="mt-4 text-sm leading-relaxed text-muted">{{ activeStackCard.detail }}</p>
+      <div class="mt-4 rounded-xl border border-line/70 bg-surface/40 p-3">
+        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-brand-100">Puntos clave</p>
+        <p *ngFor="let point of activeStackCard.highlights" class="mt-2 text-xs text-muted">• {{ point }}</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <article
+      *ngFor="let item of stackKpis; let i = index"
+      (mouseenter)="setActiveKpi(i)"
+      (mouseleave)="setActiveKpi(null)"
+      (focusin)="setActiveKpi(i)"
+      (focusout)="setActiveKpi(null)"
+      class="rounded-2xl border border-line bg-card p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-brand-800/70"
+    >
+      <h3 class="font-display text-xl font-bold text-ink">{{ item.title }}</h3>
+      <p class="mt-2 text-sm leading-relaxed text-muted">{{ item.description }}</p>
+
+      <div *ngIf="activeKpiIndex === i" class="mt-4 rounded-xl border border-brand-800/60 bg-brand-900/20 p-3">
+        <p class="text-xs font-semibold uppercase tracking-[0.12em] text-brand-100">Detalle</p>
+        <p *ngFor="let detail of item.details" class="mt-2 text-xs text-muted">• {{ detail }}</p>
+      </div>
+    </article>
+  </section>
+
+</section>

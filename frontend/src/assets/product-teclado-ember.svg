@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Teclado Ember Pro</title>
+  <desc id="desc">Ilustracion de un teclado mecanico de perfil bajo con retroiluminacion cobre.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#30231b"/>
+      <stop offset="100%" stop-color="#16110d"/>
+    </linearGradient>
+    <linearGradient id="keys" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d48c4d"/>
+      <stop offset="100%" stop-color="#8d4d23"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" rx="40" fill="url(#bg)"/>
+  <circle cx="188" cy="110" r="96" fill="#4f3626" opacity="0.35"/>
+  <circle cx="1030" cy="584" r="124" fill="#2f463f" opacity="0.25"/>
+  <g transform="translate(170 184) rotate(-7 420 180)">
+    <rect x="0" y="0" width="860" height="310" rx="34" fill="#211813" stroke="#4b372a" stroke-width="10"/>
+    <g fill="url(#keys)">
+      <rect x="48" y="42" width="78" height="52" rx="12"/>
+      <rect x="142" y="42" width="78" height="52" rx="12"/>
+      <rect x="236" y="42" width="78" height="52" rx="12"/>
+      <rect x="330" y="42" width="78" height="52" rx="12"/>
+      <rect x="424" y="42" width="78" height="52" rx="12"/>
+      <rect x="518" y="42" width="78" height="52" rx="12"/>
+      <rect x="612" y="42" width="78" height="52" rx="12"/>
+      <rect x="706" y="42" width="108" height="52" rx="12"/>
+      <rect x="48" y="112" width="96" height="52" rx="12"/>
+      <rect x="158" y="112" width="78" height="52" rx="12"/>
+      <rect x="252" y="112" width="78" height="52" rx="12"/>
+      <rect x="346" y="112" width="78" height="52" rx="12"/>
+      <rect x="440" y="112" width="78" height="52" rx="12"/>
+      <rect x="534" y="112" width="78" height="52" rx="12"/>
+      <rect x="628" y="112" width="186" height="52" rx="12"/>
+      <rect x="48" y="182" width="118" height="52" rx="12"/>
+      <rect x="182" y="182" width="78" height="52" rx="12"/>
+      <rect x="276" y="182" width="78" height="52" rx="12"/>
+      <rect x="370" y="182" width="78" height="52" rx="12"/>
+      <rect x="464" y="182" width="78" height="52" rx="12"/>
+      <rect x="558" y="182" width="78" height="52" rx="12"/>
+      <rect x="652" y="182" width="162" height="52" rx="12"/>
+    </g>
+    <rect x="208" y="252" width="448" height="30" rx="15" fill="#f1d3b2" opacity="0.88"/>
+  </g>
+  <text x="170" y="104" fill="#f4e8da" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700">Teclado mecanico Ember Pro</text>
+  <text x="170" y="156" fill="#d8b896" font-family="Segoe UI, Arial, sans-serif" font-size="28">Switch tactil y formato compacto para escritorio</text>
+</svg>

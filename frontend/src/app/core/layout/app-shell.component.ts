@@ -26,9 +26,11 @@ export class AppShellComponent {
 
   readonly navItems: NavItem[] = [
     { label: 'Inicio', path: '/' },
+    { label: 'Stack tecnológico', path: '/stack-tecnologico' },
     { label: 'Catalogo', path: '/catalogo' },
     { label: 'Carrito', path: '/carrito' },
     { label: 'Checkout', path: '/checkout' },
+    { label: 'Mis pedidos', path: '/mis-pedidos' },
     { label: 'Seguimiento', path: '/seguimiento' },
     { label: 'Login', path: '/login' },
   ];

@@ -13,6 +13,11 @@ export const routes: Routes = [
 				pathMatch: 'full',
 			},
 			{
+				path: 'stack-tecnologico',
+				loadComponent: () => import('./features/stack/pages/stack-page.component').then((m) => m.StackPageComponent),
+				canActivate: [authGuard],
+			},
+			{
 				path: 'catalogo',
 				loadComponent: () => import('./features/catalog/pages/catalog-page.component').then((m) => m.CatalogPageComponent),
 				canActivate: [authGuard],
@@ -30,6 +35,11 @@ export const routes: Routes = [
 			{
 				path: 'seguimiento',
 				loadComponent: () => import('./features/tracking/pages/tracking-page.component').then((m) => m.TrackingPageComponent),
+				canActivate: [authGuard],
+			},
+			{
+				path: 'mis-pedidos',
+				loadComponent: () => import('./features/orders/pages/orders-history-page.component').then((m) => m.OrdersHistoryPageComponent),
 				canActivate: [authGuard],
 			},
 			{
