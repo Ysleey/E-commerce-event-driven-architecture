@@ -1,0 +1,31 @@
+Verifica infraestructura
+
+En la raíz del repo ejecuta:
+
+docker compose up -d
+
+Comprueba que están arriba PostgreSQL y Kafka.
+
+Levanta backend
+Terminal 1:
+cd order-service
+.\mvnw.cmd spring-boot:run
+
+Terminal 2:
+cd shipping-service
+.\mvnw.cmd spring-boot:run
+
+Comprueba salud de servicios
+Abre en navegador:
+http://localhost:8080/actuator/health
+http://localhost:8082/actuator/health
+
+Ambos deben responder UP o estado saludable.
+Levanta frontend
+
+Terminal 3:
+cd frontend
+cmd /c npm install
+cmd /c npm start
+Abre:
+http://localhost:4200
