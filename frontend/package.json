@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:fast": "ng serve --source-map=false --live-reload=false",
+    "start:fast": "ng serve --live-reload=false --hmr=false",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
