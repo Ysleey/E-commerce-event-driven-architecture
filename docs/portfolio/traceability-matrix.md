@@ -18,14 +18,14 @@ Ejemplo:
 
 ## Plantilla de vinculacion por KAN
 
-Completar al cerrar cada KAN:
+Estado actual (2026-07-10):
 
 | KAN | Evidencia tecnica | Commit(s) | PR |
 |-----|-------------------|-----------|----|
-| KAN-38 | docs/kan/KAN-38-configuracion-integracion-frontend-backend.md | `<hash-1>` | `<url-pr>` |
-| KAN-39 | docs/kan/KAN-39-calidad-tecnica-frontend.md | `<hash-2>` | `<url-pr>` |
-| KAN-40 | docs/kan/KAN-40-ci-minima-frontend.md | `<hash-3>` | `<url-pr>` |
-| KAN-41 | docs/kan/KAN-41-evidencia-cierre-portafolio-epica.md | `<hash-4>` | `<url-pr>` |
+| KAN-38 | docs/kan/KAN-38-configuracion-integracion-frontend-backend.md | `4420972` | N/A (sin PR registrado) |
+| KAN-39 | docs/kan/KAN-39-calidad-tecnica-frontend.md | `efc4044` | N/A (sin PR registrado) |
+| KAN-40 | docs/kan/KAN-40-ci-minima-frontend.md | `6825b09` | N/A (sin PR registrado) |
+| KAN-41 | docs/kan/KAN-41-evidencia-cierre-portafolio-epica.md | `89ea0bf` | N/A (sin PR registrado) |
 
 ## Comandos utiles
 
